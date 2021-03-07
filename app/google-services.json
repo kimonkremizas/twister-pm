@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "457176402225",
+    "firebase_url": "https://fir-kkremizas-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fir-kkremizas",
+    "storage_bucket": "fir-kkremizas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457176402225:android:88c790deac5fe52b180810",
+        "android_client_info": {
+          "package_name": "com.example.recyclerviewanimalexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "457176402225-cojnvv8df6ej0v68lh43bv76jghucgvh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBm0rU1rgzghlUIXKtYWTIBti9ffFdKCh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "457176402225-cojnvv8df6ej0v68lh43bv76jghucgvh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457176402225:android:ee835927b596181b180810",
+        "android_client_info": {
+          "package_name": "com.example.twisterpm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "457176402225-cojnvv8df6ej0v68lh43bv76jghucgvh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBm0rU1rgzghlUIXKtYWTIBti9ffFdKCh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "457176402225-cojnvv8df6ej0v68lh43bv76jghucgvh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
