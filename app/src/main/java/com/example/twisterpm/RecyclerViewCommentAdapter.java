@@ -9,15 +9,18 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.twisterpm.model.Comment;
+import com.example.twisterpm.model.Message;
+
 import java.util.List;
 
-public class RecyclerViewPrettyAdapter extends RecyclerView.Adapter<RecyclerViewPrettyAdapter.ViewHolder> {
-    private final List<Message> data;
+public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerViewCommentAdapter.ViewHolder> {
+    private final List<Comment> data;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    RecyclerViewPrettyAdapter(Context context, List<Message> data) {
+    RecyclerViewCommentAdapter(Context context, List<Comment> data) {
         this.mInflater = LayoutInflater.from(context);
         this.data = data;
     }
@@ -25,7 +28,7 @@ public class RecyclerViewPrettyAdapter extends RecyclerView.Adapter<RecyclerView
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.single_message, parent, false);
+        View view = mInflater.inflate(R.layout.single_comment_layout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -33,22 +36,16 @@ public class RecyclerViewPrettyAdapter extends RecyclerView.Adapter<RecyclerView
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Message message = data.get(position);
-        holder.messageContentTextView.setText(message.getContent());
-        holder.userTextView.setText(message.getUser());
-        if (message.getTotalComments() == 1) {
-            holder.messageCommentsNoTextView.setText(message.getTotalComments().toString() + " comment");
-        } else {
-            holder.messageCommentsNoTextView.setText(message.getTotalComments().toString() + " comments");
-        }
-
-        if (message.getUser().equals("kimon")) {
+        Comment comment = data.get(position);
+        holder.commentContentTextView.setText(comment.getContent());
+        holder.commentuserTextView.setText(comment.getUser());
+        if (comment.getUser().equals("kimon")) {
             holder.imageView.setImageResource(R.drawable.photo1);
-        } else if (message.getUser().equals("rania@hotmail.com")) {
+        } else if (comment.getUser().equals("rania@hotmail.com")) {
             holder.imageView.setImageResource(R.drawable.rania);
-        } else if (message.getUser().equals("Philip")) {
+        } else if (comment.getUser().equals("Philip")) {
             holder.imageView.setImageResource(R.drawable.philip);
-        } else if (message.getUser().equals("anbo")) {
+        } else if (comment.getUser().equals("anbo")) {
             holder.imageView.setImageResource(R.drawable.anbo);
         }
     }
@@ -61,15 +58,14 @@ public class RecyclerViewPrettyAdapter extends RecyclerView.Adapter<RecyclerView
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        final TextView messageContentTextView, userTextView, messageCommentsNoTextView;
+        final TextView commentContentTextView, commentuserTextView;
         final ImageView imageView;
 
         ViewHolder(View itemView) {
             super(itemView);
-            messageContentTextView = itemView.findViewById(R.id.messageContentTextView);
-            userTextView = itemView.findViewById(R.id.messageUserTextView);
-            imageView = itemView.findViewById(R.id.messageIconImage);
-            messageCommentsNoTextView = itemView.findViewById(R.id.messageCommentsNoTextView);
+            commentContentTextView = itemView.findViewById(R.id.commentContentTextView);
+            commentuserTextView = itemView.findViewById(R.id.commentUserTextView);
+            imageView = itemView.findViewById(R.id.commentIconImage);
             itemView.setOnClickListener(this);
         }
 
@@ -81,7 +77,7 @@ public class RecyclerViewPrettyAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     // convenience method for getting data at click position
-    Message getItem(int id) {
+    Comment getItem(int id) {
         return data.get(id);
     }
 
@@ -92,6 +88,6 @@ public class RecyclerViewPrettyAdapter extends RecyclerView.Adapter<RecyclerView
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View view, int position, Message message);
+        void onItemClick(View view, int position, Comment comment);
     }
 }

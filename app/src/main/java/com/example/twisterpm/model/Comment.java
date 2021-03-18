@@ -1,4 +1,4 @@
-package com.example.twisterpm;
+package com.example.twisterpm.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

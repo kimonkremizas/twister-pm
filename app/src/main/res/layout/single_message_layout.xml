@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/single_message_layout"
     android:layout_marginHorizontal="8dp">
 
 
@@ -18,7 +19,7 @@
 
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/messageIconImage"
+                android:id="@+id/messageUserIconImage"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="8dp"
@@ -36,7 +37,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:layout_toEndOf="@+id/messageIconImage"
+                android:layout_toEndOf="@+id/messageUserIconImage"
                 android:text="User"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -50,7 +51,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:layout_toEndOf="@+id/messageIconImage"
+                android:layout_toEndOf="@+id/messageUserIconImage"
                 android:text="Message content"
                 android:textAlignment="viewStart" />
 
@@ -62,14 +63,25 @@
                 android:layout_alignParentEnd="true"
                 android:text="# of comments" />
 
+            <ImageButton
+                android:id="@+id/messageDeleteButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/delete"
+                android:tint="@android:color/holo_red_dark"
+                android:visibility="gone" />
+
 
         </RelativeLayout>
 
         <View
-            android:id="@+id/divider3"
+            android:id="@+id/messageDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_margin="4dp"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginTop="4dp"
             android:background="?android:attr/listDivider" />
     </LinearLayout>
 

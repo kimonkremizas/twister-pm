@@ -1,21 +1,17 @@
 package com.example.twisterpm;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
+
+import com.example.twisterpm.model.Message;
 
 public class SecondFragment extends Fragment {
 
@@ -85,7 +81,7 @@ public class SecondFragment extends Fragment {
     ) {
         // Inflate the layout for this fragment
 
-        return inflater.inflate(R.layout.single_message, container, false);
+        return inflater.inflate(R.layout.single_message_layout, container, false);
 
 
 

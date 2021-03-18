@@ -1,14 +1,28 @@
 package com.example.twisterpm;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.twisterpm.model.Comment;
+import com.example.twisterpm.model.Message;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -19,9 +33,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SingleMessageActivity extends AppCompatActivity {
-    private Message singleMessage;
-    private TextView messageUserTextView, messageContentTextView, messageCommentsNoTextView;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    Message singleMessage;
+    TextView messageUserTextView, messageContentTextView, messageCommentsNoTextView;
+    ImageButton messageDeleteButton;
+    SwipeRefreshLayout swipeRefreshLayout;
+    RecyclerViewCommentAdapter adapter;
+    LayoutInflater inflater;
+    AlertDialog.Builder resetAlert;
+    FirebaseAuth fAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +48,10 @@ public class SingleMessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_single_message);
         messageUserTextView = findViewById(R.id.messageUserTextView);
         messageContentTextView = findViewById(R.id.messageContentTextView);
-        messageCommentsNoTextView = findViewById(R.id.messageCommentsNoTextView3);
+        messageCommentsNoTextView = findViewById(R.id.messageCommentsNoTextView);
+        messageDeleteButton = findViewById(R.id.messageDeleteButton);
+        inflater = this.getLayoutInflater();
+        resetAlert = new AlertDialog.Builder(this);
 
         Log.d("KIMON", "In Single Message Activity");
         Intent intent = getIntent();
@@ -42,10 +64,63 @@ public class SingleMessageActivity extends AppCompatActivity {
         }else{
             messageCommentsNoTextView.setText(singleMessage.getTotalComments()+" comments");
         }
+        fAuth = FirebaseAuth.getInstance();
+        if (singleMessage.getUser().equals(fAuth.getCurrentUser().getEmail())) {
+            messageDeleteButton.setVisibility(View.VISIBLE);
+        }
+
+        messageDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //View view = inflater.inflate(R.layout.delete_message_popup, null);
+
+                resetAlert.setTitle("Delete Message")
+                        .setMessage("Are you sure you want to delete this message?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteMessage(singleMessage);
+                            }
+                        }).setNegativeButton("No", null)
+                       // .setView(view)
+                        .create().show();
+            }
+        });
         SwipeRefresh();
         GetComments();
-
     }
+
+
+    public void DeleteMessage(Message singleMessage){
+        TwisterPMService service = ApiUtils.getTwisterPMService();
+
+        Call<Message> messageCall = service.deleteMessage(singleMessage.getId());
+        messageCall.enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> call, Response<Message> response) {
+                if (response.isSuccessful()) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.putExtra("SINGLEMESSAGE", "Message deleted");
+                    Log.d("KIMON", "Message with id "+ singleMessage.getId() +" deleted");
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Message successfully deleted", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
+                    String errorMessage = "Problem " + response.code() + " " + response.message();
+                    Log.d("KIMON", errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Message> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+
+
 
     public void SwipeRefresh() {
         swipeRefreshLayout = findViewById(R.id.singleMessageSwipeRefresh);
@@ -59,7 +134,7 @@ public class SingleMessageActivity extends AppCompatActivity {
     private void populateRecyclerView(List<Comment> comments) {
         RecyclerView recyclerView = findViewById(R.id.commentsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerViewSimpleAdapter<Comment> adapter = new RecyclerViewSimpleAdapter<>(comments);
+        adapter = new RecyclerViewCommentAdapter(this,comments);
         recyclerView.setAdapter(adapter);
 //        adapter.setOnItemClickListener((view, position, item) -> {
 //            Message message = (Message) item;
@@ -74,12 +149,7 @@ public class SingleMessageActivity extends AppCompatActivity {
     public void GetComments() {
         swipeRefreshLayout.setRefreshing(true);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://anbo-restmessages.azurewebsites.net/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        TwisterPMService service = retrofit.create(TwisterPMService.class);
+        TwisterPMService service = ApiUtils.getTwisterPMService();
 
         Call<List<Comment>> commentCall = service.getMessageComments(singleMessage.getId());
         commentCall.enqueue(new Callback<List<Comment>>() {
