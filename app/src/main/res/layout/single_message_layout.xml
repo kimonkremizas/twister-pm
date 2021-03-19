@@ -69,9 +69,21 @@
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="8dp"
+                android:background="?android:attr/selectableItemBackground"
                 android:src="@drawable/delete"
                 android:tint="@android:color/holo_red_dark"
                 android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/postCommentButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignBottom="@id/messageCommentsNoTextView"
+                android:layout_marginRight="8dp"
+                android:layout_toLeftOf="@id/messageCommentsNoTextView"
+                android:src="@drawable/reply"
+                android:background="?android:attr/selectableItemBackground"
+                android:tint="@android:color/black" />
 
 
         </RelativeLayout>

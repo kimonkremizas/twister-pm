@@ -24,6 +24,12 @@ public interface TwisterPMService {
     @POST("messages")
     Call<Message> postMessage(@Body Message message);
 
-    @DELETE("messages/{id}")
-    Call<Message> deleteMessage(@Path("id") int id);
+    @POST("messages/{messageId}/comments")
+    Call<Comment> postComment(@Path("messageId") int messageId, @Body Comment comment);
+
+    @DELETE("messages/{messageId}")
+    Call<Message> deleteMessage(@Path("messageId") int id);
+
+    @DELETE("messages/{messageId}/comments/{commentsId}")
+    Call<Comment> deleteComment(@Path("messageId") int messageId, @Path("commentsId") int commentsId);
 }

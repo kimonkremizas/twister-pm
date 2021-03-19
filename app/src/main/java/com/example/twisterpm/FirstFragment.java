@@ -1,5 +1,6 @@
 package com.example.twisterpm;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -42,40 +44,10 @@ public class FirstFragment extends Fragment {
     FirebaseAuth fAuth;
     private SwipeRefreshLayout swipeRefreshLayout;
     RecyclerViewMessageAdapter adapter;
+    List<Message> messages;
 
-    public FirstFragment(){
-
+    public FirstFragment() {
     }
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setHasOptionsMenu(true);
-//    }
-//
-//    @Override
-//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-//        inflater.inflate(R.menu.menu_main, menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.action_allMessages:  {
-//                                NavHostFragment.findNavController(FirstFragment.this)
-//                       .navigate(R.id.action_FirstFragment_to_SecondFragment);
-//                return true;
-//            }
-//            case R.id.action_myMessages: {
-//                return true;
-//            }
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//
-//    }
-
-
-
 
     @Override
     public View onCreateView(
@@ -93,12 +65,12 @@ public class FirstFragment extends Fragment {
         Log.d("KIMON", "In First Fragment");
         SwipeRefresh();
         CheckMailVerification();
-        GetMessages();
 
-        NestedScrollView scrollView = getActivity().findViewById (R.id.firstFragmentScrollView);
-        scrollView.setFillViewport (true);
+
+        NestedScrollView scrollView = getActivity().findViewById(R.id.firstFragmentScrollView);
+        scrollView.setFillViewport(true);
         TextView welcomeTextView = getActivity().findViewById(R.id.welcomeTextView);
-        welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail()+"!");
+        welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail() + "!");
 
 
         verifyEmailButton.setOnClickListener(new View.OnClickListener() {
@@ -120,15 +92,18 @@ public class FirstFragment extends Fragment {
         });
 
         CheckIfPostButtonShouldBeEnabled();
-
         postNewMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PostMessage();
             }
         });
+    }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        GetMessages();
     }
 
     public void CheckMailVerification() {
@@ -159,14 +134,13 @@ public class FirstFragment extends Fragment {
             CheckMailVerification();
             GetMessages();
             TextView welcomeTextView = getActivity().findViewById(R.id.welcomeTextView);
-            welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail()+"!");
+            welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail() + "!");
             swipeRefreshLayout.setRefreshing(false);
         });
     }
 
     public void GetMessages() {
         swipeRefreshLayout.setRefreshing(true);
-
 
 
         TwisterPMService service = ApiUtils.getTwisterPMService();
@@ -178,13 +152,13 @@ public class FirstFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful()) {
                     String responseMessage = response.message();
-                    List<Message> messages = response.body();
+                    messages = response.body();
                     //Log.d("KIMON", messages.get(1).getUser());
                     populateRecyclerView(messages);
                 } else {
-                Toast.makeText(getActivity(), response.code(), Toast.LENGTH_LONG).show();
-                String errorMessage = "Problem " + response.code() + " " + response.message();
-                Log.d("KIMON", errorMessage);
+                    Toast.makeText(getActivity(), response.code(), Toast.LENGTH_LONG).show();
+                    String errorMessage = "Problem " + response.code() + " " + response.message();
+                    Log.d("KIMON", errorMessage);
                 }
             }
 
@@ -196,10 +170,10 @@ public class FirstFragment extends Fragment {
         });
     }
 
-    public void PostMessage(){
+    public void PostMessage() {
         EditText newMessageEditText = getActivity().findViewById(R.id.newMessageEditText);
 
-        if (newMessageEditText.getText().toString().trim().length() != 0){
+        if (newMessageEditText.getText().toString().trim().length() != 0) {
             swipeRefreshLayout.setRefreshing(true);
 
             String newMessageContent = newMessageEditText.getText().toString().trim().replaceAll(" +", " ");
@@ -239,17 +213,14 @@ public class FirstFragment extends Fragment {
                     Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
-        }else{
+        } else {
             Toast.makeText(getActivity(), "Message must contain non-space characters", Toast.LENGTH_LONG).show();
         }
-
-
-
     }
 
-    private void CheckIfPostButtonShouldBeEnabled(){
+    private void CheckIfPostButtonShouldBeEnabled() {
         EditText newMessageEditText = getActivity().findViewById(R.id.newMessageEditText);
-        if(newMessageEditText.length() == 0) postNewMessageButton.setEnabled(false);
+        if (newMessageEditText.length() == 0) postNewMessageButton.setEnabled(false);
         newMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -270,25 +241,40 @@ public class FirstFragment extends Fragment {
     }
 
 
-
     private void populateRecyclerView(List<Message> messages) {
         RecyclerView recyclerView = getActivity().findViewById(R.id.messagesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new RecyclerViewMessageAdapter(this.getContext(),messages);
+        adapter = new RecyclerViewMessageAdapter(this.getContext(), messages);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
         adapter.setClickListener((view, position, item) -> {
             Message message = (Message) item;
             Log.d("KIMON", item.toString());
 
-           Intent intent = new Intent(getActivity(), SingleMessageActivity.class);
-           intent.putExtra("SINGLEMESSAGE", message);
-           Log.d("KIMON", "putExtra " + message.toString());
-           startActivity(intent);
-
-
-//            NavHostFragment.findNavController(FirstFragment.this)
-//                .navigate(R.id.action_FirstFragment_to_SecondFragment);
+            Intent intent = new Intent(getActivity(), SingleMessageActivity.class);
+            intent.putExtra("SINGLEMESSAGE", message);
+            Log.d("KIMON", "putExtra " + message.toString());
+            startActivity(intent);
 
         });
+
+        // TODO add setOnLongClickListener on adapter!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
     }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    messages.remove(viewHolder.getAdapterPosition());
+                    adapter.notifyDataSetChanged();
+                    Log.d("KIMON","Message with Id="  +" deleted with a swipe!");
+                }
+            };
 }

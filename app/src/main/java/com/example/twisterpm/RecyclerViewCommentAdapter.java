@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.twisterpm.model.Comment;
 import com.example.twisterpm.model.Message;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -18,6 +20,8 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
     private final List<Comment> data;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
+    private ItemLongClickListener mLongClickListener;
+    FirebaseAuth fAuth;
 
     // data is passed into the constructor
     RecyclerViewCommentAdapter(Context context, List<Comment> data) {
@@ -38,15 +42,27 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
     public void onBindViewHolder(ViewHolder holder, int position) {
         Comment comment = data.get(position);
         holder.commentContentTextView.setText(comment.getContent());
-        holder.commentuserTextView.setText(comment.getUser());
-        if (comment.getUser().equals("kimon")) {
-            holder.imageView.setImageResource(R.drawable.photo1);
-        } else if (comment.getUser().equals("rania@hotmail.com")) {
-            holder.imageView.setImageResource(R.drawable.rania);
-        } else if (comment.getUser().equals("Philip")) {
-            holder.imageView.setImageResource(R.drawable.philip);
-        } else if (comment.getUser().equals("anbo")) {
-            holder.imageView.setImageResource(R.drawable.anbo);
+        holder.commentUserTextView.setText(comment.getUser());
+
+        switch (comment.getUser()) {
+            case "kimon":
+                holder.imageView.setImageResource(R.drawable.photo1);
+                break;
+            case "rania@hotmail.com":
+                holder.imageView.setImageResource(R.drawable.rania);
+                break;
+            case "Philip":
+                holder.imageView.setImageResource(R.drawable.philip);
+                break;
+            case "anbo":
+            case "andersb@gmail.com":
+                holder.imageView.setImageResource(R.drawable.anbo);
+                break;
+        }
+
+        fAuth = FirebaseAuth.getInstance();
+        if (comment.getUser().equals(fAuth.getCurrentUser().getEmail())) {
+            holder.commentDeleteButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -57,22 +73,32 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        final TextView commentContentTextView, commentuserTextView;
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
+        final TextView commentContentTextView, commentUserTextView;
         final ImageView imageView;
+        final ImageButton commentDeleteButton;
 
         ViewHolder(View itemView) {
             super(itemView);
             commentContentTextView = itemView.findViewById(R.id.commentContentTextView);
-            commentuserTextView = itemView.findViewById(R.id.commentUserTextView);
+            commentUserTextView = itemView.findViewById(R.id.commentUserTextView);
             imageView = itemView.findViewById(R.id.commentIconImage);
+            commentDeleteButton = itemView.findViewById(R.id.commentDeleteButton);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if (mClickListener != null)
                 mClickListener.onItemClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if (mLongClickListener != null)
+                mLongClickListener.onItemLongClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
+            return true;
         }
     }
 
@@ -86,8 +112,16 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
         this.mClickListener = itemClickListener;
     }
 
+    void setLongClickListener(ItemLongClickListener itemLongClickListener) {
+        this.mLongClickListener = itemLongClickListener;
+    }
+
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position, Comment comment);
+    }
+
+    public interface ItemLongClickListener {
+        void onItemLongClick(View view, int position, Comment comment);
     }
 }
