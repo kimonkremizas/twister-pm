@@ -2,10 +2,13 @@ package com.example.twisterpm;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,10 +27,45 @@ public class SettingsActivity extends AppCompatActivity {
     FirebaseUser user;
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        Log.d("KIMON", "Settings Activity: onCreateOptionsMenu");
+        //getMenuInflater().inflate(R.menu.menu_bottom, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        Log.d("KIMON", "Settings Activity: onOptionsItemSelected");
+
+        switch (id) {
+            case R.id.action_settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                break;
+            case R.id.action_logout:
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                finish();
+                break;
+            case R.id.action_allMessages:
+                startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Log.d("KIMON", "Settings Activity: onCreate");
         newPassword = findViewById(R.id.newPasswordEditText);
         newPasswordConfirmation = findViewById(R.id.newPasswordConfirmationEditText);
         updatePasswordButton = findViewById(R.id.updatePasswordButton);
@@ -67,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(SettingsActivity.this, "Password changed", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
                         finish();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -107,10 +145,5 @@ public class SettingsActivity extends AppCompatActivity {
                 });
             }
         });
-
-
-
-
-
     }
 }

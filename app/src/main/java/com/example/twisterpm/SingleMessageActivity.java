@@ -44,6 +44,7 @@ public class SingleMessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_message);
+        Log.d("KIMON", "SingleMessage Activity: onCreate");
         messageUserTextView = findViewById(R.id.messageUserTextView);
         messageContentTextView = findViewById(R.id.messageContentTextView);
         messageCommentsNoTextView = findViewById(R.id.messageCommentsNoTextView);
@@ -53,7 +54,6 @@ public class SingleMessageActivity extends AppCompatActivity {
         inflater = this.getLayoutInflater();
         resetAlert = new AlertDialog.Builder(this);
 
-        Log.d("KIMON", "In Single Message Activity");
         Intent intent = getIntent();
         singleMessage = (Message) intent.getSerializableExtra("SINGLEMESSAGE");
         Log.d("KIMON", "Intent: " + singleMessage.toString());
@@ -241,7 +241,7 @@ public class SingleMessageActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Message> call, Response<Message> response) {
                 if (response.isSuccessful()) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
                     intent.putExtra("SINGLEMESSAGE", "Message deleted");
                     Log.d("KIMON", "Message with id " + singleMessage.getId() + " deleted");
                     startActivity(intent);

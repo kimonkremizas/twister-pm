@@ -55,14 +55,14 @@ public class FirstFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first, container, false);
+        return inflater.inflate(R.layout.activity_all_messages, container, false);
 
     }
 
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("KIMON", "In First Fragment");
+        Log.d("KIMON", "First Fragment Activity: onViewCreated");
         SwipeRefresh();
         CheckMailVerification();
 
@@ -103,6 +103,7 @@ public class FirstFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d("KIMON", "First Fragment Activity: onResume");
         GetMessages();
     }
 
