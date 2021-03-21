@@ -1,106 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".SingleMessageActivity">
 
-
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    android:id="@+id/singleMessageSwipeRefresh"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/firstFragmentScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp">
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".SingleMessageActivity">
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/messageCommentsNoTextView3"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginTop="8dp"-->
-        <!--            android:layout_marginEnd="8dp"-->
-        <!--            android:text="# of comments"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/messageContentTextView" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/messageContentTextView"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:padding="8sp"-->
-        <!--            android:text="Message content"-->
-        <!--            android:textAlignment="viewStart"-->
-        <!--            android:textSize="18sp"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/messageUserTextView" />-->
-
-        <!--        <TextView-->
-        <!--            android:id="@+id/messageUserTextView"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="8dp"-->
-        <!--            android:layout_marginTop="16dp"-->
-        <!--            android:text="User"-->
-        <!--            android:textSize="24sp"-->
-        <!--            android:textStyle="bold"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--        <View-->
-        <!--            android:id="@+id/divider"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="1dp"-->
-        <!--            android:background="?android:attr/listDivider"-->
-        <!--            app:layout_constraintBottom_toTopOf="@+id/commentsRecyclerView"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/messageCommentsNoTextView3" />-->
+        android:layout_below="@id/toolbar">
 
 
-        <include
-            android:id="@+id/single_message_layout"
-            layout="@layout/single_message_layout" />
-
-
-        <View
-            android:id="@+id/divider"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/singleMessageSwipeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/single_message_layout" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/commentsRecyclerView"
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/single_message_layout" />
+            app:layout_constraintTop_toTopOf="parent">
 
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/firstFragmentScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:context=".SingleMessageActivity">
+
+                    <!--        <TextView-->
+                    <!--            android:id="@+id/messageCommentsNoTextView3"-->
+                    <!--            android:layout_width="wrap_content"-->
+                    <!--            android:layout_height="wrap_content"-->
+                    <!--            android:layout_marginTop="8dp"-->
+                    <!--            android:layout_marginEnd="8dp"-->
+                    <!--            android:text="# of comments"-->
+                    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--            app:layout_constraintTop_toBottomOf="@+id/messageContentTextView" />-->
+
+                    <!--        <TextView-->
+                    <!--            android:id="@+id/messageContentTextView"-->
+                    <!--            android:layout_width="wrap_content"-->
+                    <!--            android:layout_height="wrap_content"-->
+                    <!--            android:padding="8sp"-->
+                    <!--            android:text="Message content"-->
+                    <!--            android:textAlignment="viewStart"-->
+                    <!--            android:textSize="18sp"-->
+                    <!--            app:layout_constraintStart_toStartOf="parent"-->
+                    <!--            app:layout_constraintTop_toBottomOf="@+id/messageUserTextView" />-->
+
+                    <!--        <TextView-->
+                    <!--            android:id="@+id/messageUserTextView"-->
+                    <!--            android:layout_width="wrap_content"-->
+                    <!--            android:layout_height="wrap_content"-->
+                    <!--            android:layout_marginStart="8dp"-->
+                    <!--            android:layout_marginTop="16dp"-->
+                    <!--            android:text="User"-->
+                    <!--            android:textSize="24sp"-->
+                    <!--            android:textStyle="bold"-->
+                    <!--            app:layout_constraintStart_toStartOf="parent"-->
+                    <!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+                    <!--        <View-->
+                    <!--            android:id="@+id/divider"-->
+                    <!--            android:layout_width="match_parent"-->
+                    <!--            android:layout_height="1dp"-->
+                    <!--            android:background="?android:attr/listDivider"-->
+                    <!--            app:layout_constraintBottom_toTopOf="@+id/commentsRecyclerView"-->
+                    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--            app:layout_constraintStart_toStartOf="parent"-->
+                    <!--            app:layout_constraintTop_toBottomOf="@+id/messageCommentsNoTextView3" />-->
+
+
+                    <include
+                        android:id="@+id/single_message_layout"
+                        layout="@layout/single_message_layout" />
+
+
+                    <View
+                        android:id="@+id/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="3dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:background="?android:attr/listDivider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/single_message_layout" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/commentsRecyclerView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/single_message_layout" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.core.widget.NestedScrollView>
-
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

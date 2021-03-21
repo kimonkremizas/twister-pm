@@ -64,14 +64,13 @@
                 android:text="# of comments" />
 
             <ImageButton
-                android:id="@+id/messageDeleteButton"
+                android:id="@+id/messageOverflowButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="8dp"
                 android:background="?android:attr/selectableItemBackground"
-                android:src="@drawable/delete"
-                android:tint="@android:color/holo_red_dark"
+                android:src="@drawable/ic_baseline_more_vert_24"
                 android:visibility="gone" />
 
             <ImageButton

@@ -2,6 +2,7 @@ package com.example.twisterpm;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -9,12 +10,16 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,32 +37,102 @@ public class SingleMessageActivity extends AppCompatActivity {
     Message singleMessage;
     Comment selectedComment;
     TextView messageUserTextView, messageContentTextView, messageCommentsNoTextView;
-    ImageButton messageDeleteButton, postCommentButton;
+    ImageButton messageOverflowButton, postCommentButton;
+    ImageView messageUserImageView;
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerViewCommentAdapter adapter;
-    LayoutInflater inflater;
-    AlertDialog.Builder resetAlert;
+    LayoutInflater layoutInflater;
+    MenuInflater menuInflater;
+    AlertDialog.Builder postCommentAlert, deleteMessageAlert, deleteCommentAlert;
     FirebaseAuth fAuth;
     int singleMessageCommentsNo;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        Log.d("KIMON", "SingleMessage Activity: onCreateOptionsMenu");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        Log.d("KIMON", "SingleMessage Activity: onOptionsItemSelected");
+
+        switch (id) {
+            case R.id.action_settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                break;
+            case R.id.action_logout:
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                finish();
+                break;
+            case R.id.action_allMessages:
+                startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void showDeleteMessageAlert(){
+        deleteMessageAlert.setTitle("Delete Message")
+                .setMessage("Are you sure you want to delete this message?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DeleteMessage(singleMessage);
+                    }
+                }).setNegativeButton("No", null)
+                //.setView(deleteMessageView)
+                .create().show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_message);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Single message");
+        setSupportActionBar(toolbar);
+
         Log.d("KIMON", "SingleMessage Activity: onCreate");
         messageUserTextView = findViewById(R.id.messageUserTextView);
+        messageUserImageView = findViewById(R.id.messageUserIconImage);
         messageContentTextView = findViewById(R.id.messageContentTextView);
         messageCommentsNoTextView = findViewById(R.id.messageCommentsNoTextView);
-        messageDeleteButton = findViewById(R.id.messageDeleteButton);
+        messageOverflowButton = findViewById(R.id.messageOverflowButton);
         postCommentButton = findViewById(R.id.postCommentButton);
 
-        inflater = this.getLayoutInflater();
-        resetAlert = new AlertDialog.Builder(this);
+        layoutInflater = this.getLayoutInflater();
+        menuInflater = this.getMenuInflater();
+        postCommentAlert = new AlertDialog.Builder(this);
+        deleteMessageAlert = new AlertDialog.Builder(this);
+        deleteCommentAlert = new AlertDialog.Builder(this);
 
         Intent intent = getIntent();
         singleMessage = (Message) intent.getSerializableExtra("SINGLEMESSAGE");
         Log.d("KIMON", "Intent: " + singleMessage.toString());
         messageUserTextView.setText(singleMessage.getUser());
+
+        switch (singleMessage.getUser()){
+            case "kimon":
+                messageUserImageView.setImageResource(R.drawable.photo1);
+                break;
+            case "rania@hotmail.com":
+                messageUserImageView.setImageResource(R.drawable.rania);
+                break;
+            case "anbo":
+                messageUserImageView.setImageResource(R.drawable.anbo);
+                break;
+            default:
+                messageUserImageView.setImageResource(R.drawable.philip);
+        }
+
         messageContentTextView.setText(singleMessage.getContent());
         if (singleMessage.getTotalComments() == 1) {
             messageCommentsNoTextView.setText(singleMessage.getTotalComments() + " comment");
@@ -66,38 +141,45 @@ public class SingleMessageActivity extends AppCompatActivity {
         }
         fAuth = FirebaseAuth.getInstance();
         if (singleMessage.getUser().equals(fAuth.getCurrentUser().getEmail())) {
-            messageDeleteButton.setVisibility(View.VISIBLE);
+            messageOverflowButton.setVisibility(View.VISIBLE);
         }
 
-        messageDeleteButton.setOnClickListener(new View.OnClickListener() {
+        messageOverflowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //View view = inflater.inflate(R.layout.delete_message_popup, null);
-
-                resetAlert.setTitle("Delete Message")
-                        .setMessage("Are you sure you want to delete this message?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteMessage(singleMessage);
-                            }
-                        }).setNegativeButton("No", null)
-                        // .setView(view)
-                        .create().show();
+                Log.d("KIMON", "SingleMessage Activity: showOverflowPopup");
+                PopupMenu popup = new PopupMenu(getApplicationContext(), v);
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.menu_overflow, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.action_delete:
+                                showDeleteMessageAlert();
+                                break;
+                            case R.id.action_edit:
+                                Toast.makeText(getApplicationContext(), "You pressed Edit", Toast.LENGTH_LONG).show();
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                popup.show();
             }
         });
 
         postCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view = inflater.inflate(R.layout.post_comment_popup, null);
+                View postCommentView = layoutInflater.inflate(R.layout.post_comment_popup, null);
 
-                resetAlert.setTitle("Post Comment")
-                        //.setMessage("Enter your e-mail to receive password reset link")
+                postCommentAlert.setTitle("Post Comment")
+                        //.setMessage("Enter your comment below:")
                         .setPositiveButton("Post", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                EditText postCommentEditText = view.findViewById(R.id.postCommentEditText);
+                                EditText postCommentEditText = postCommentView.findViewById(R.id.postCommentEditText);
                                 //postCommentEditText.requestFocus();
                                 if (postCommentEditText.getText().toString().trim().equals("")) {
                                     Log.d("KIMON", "Empty comment found!");
@@ -114,7 +196,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                                 }
                             }
                         }).setNegativeButton("Cancel", null)
-                        .setView(view)
+                        .setView(postCommentView)
                         .create().show();
             }
         });
@@ -142,14 +224,14 @@ public class SingleMessageActivity extends AppCompatActivity {
             //Comment comment = (Comment) item;
             if (item.getUser().equals(fAuth.getCurrentUser().getEmail())) {
                 Log.d("KIMON", "Long click with delete permission on comment: " + item.toString());
-                resetAlert.setTitle("Delete Comment")
+                deleteCommentAlert.setTitle("Delete Comment")
                         .setMessage("Are you sure you want to delete this comment?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
                                 DeleteComment(item);
-                                GetComments();
+
                             }
                         }).setNegativeButton("No", null)
                         // .setView(view)
@@ -270,6 +352,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     Log.d("KIMON", "Message with id " + singleMessage.getId() + " deleted");
                     Toast.makeText(getApplicationContext(), "Message successfully deleted", Toast.LENGTH_LONG).show();
+                    GetComments();
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
                     String errorMessage = "Problem " + response.code() + " " + response.message();
@@ -283,4 +366,6 @@ public class SingleMessageActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

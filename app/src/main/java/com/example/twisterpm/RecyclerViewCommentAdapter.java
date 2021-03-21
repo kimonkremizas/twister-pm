@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.twisterpm.model.Comment;
-import com.example.twisterpm.model.Message;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
@@ -51,18 +50,16 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
             case "rania@hotmail.com":
                 holder.imageView.setImageResource(R.drawable.rania);
                 break;
-            case "Philip":
-                holder.imageView.setImageResource(R.drawable.philip);
-                break;
             case "anbo":
-            case "andersb@gmail.com":
                 holder.imageView.setImageResource(R.drawable.anbo);
                 break;
+            default:
+                holder.imageView.setImageResource(R.drawable.philip);
         }
 
         fAuth = FirebaseAuth.getInstance();
         if (comment.getUser().equals(fAuth.getCurrentUser().getEmail())) {
-            holder.commentDeleteButton.setVisibility(View.VISIBLE);
+            holder.commentOverflowButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -76,14 +73,14 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
         final TextView commentContentTextView, commentUserTextView;
         final ImageView imageView;
-        final ImageButton commentDeleteButton;
+        final ImageButton commentOverflowButton;
 
         ViewHolder(View itemView) {
             super(itemView);
             commentContentTextView = itemView.findViewById(R.id.commentContentTextView);
             commentUserTextView = itemView.findViewById(R.id.commentUserTextView);
             imageView = itemView.findViewById(R.id.commentIconImage);
-            commentDeleteButton = itemView.findViewById(R.id.commentDeleteButton);
+            commentOverflowButton = itemView.findViewById(R.id.commentOverflowButton);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

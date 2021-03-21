@@ -1,36 +1,27 @@
 package com.example.twisterpm;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.twisterpm.model.Comment;
 import com.example.twisterpm.model.Message;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerViewMessageAdapter.ViewHolder> {
+public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerViewMessageAdapter.ViewHolder>  {
     private final List<Message> data;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private ItemLongClickListener mLongClickListener;
+    //private ItemTouchUIUtil mTouchUIUtil;
 
     FirebaseAuth fAuth;
 
@@ -68,18 +59,19 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             case "rania@hotmail.com":
                 holder.imageView.setImageResource(R.drawable.rania);
                 break;
-            case "Philip":
-                holder.imageView.setImageResource(R.drawable.philip);
-                break;
             case "anbo":
                 holder.imageView.setImageResource(R.drawable.anbo);
                 break;
+            default:
+                holder.imageView.setImageResource(R.drawable.philip);
         }
 
         fAuth = FirebaseAuth.getInstance();
         if (message.getUser().equals(fAuth.getCurrentUser().getEmail())) {
-            holder.messageDeleteButton.setVisibility(View.VISIBLE);
+            holder.messageOverflowButton.setVisibility(View.VISIBLE);
         }
+
+
 
    }
 
@@ -89,18 +81,20 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         return data.size();
     }
 
+
+
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener{
         final TextView messageContentTextView, messageUserTextView, messageCommentsNoTextView;
         final ImageView imageView;
-        final ImageButton messageDeleteButton;
+        final ImageButton messageOverflowButton;
 
         ViewHolder(View itemView) {
             super(itemView);
             messageContentTextView = itemView.findViewById(R.id.messageContentTextView);
             messageUserTextView = itemView.findViewById(R.id.messageUserTextView);
             imageView = itemView.findViewById(R.id.messageUserIconImage);
-            messageDeleteButton = itemView.findViewById(R.id.messageDeleteButton);
+            messageOverflowButton = itemView.findViewById(R.id.messageOverflowButton);
             messageCommentsNoTextView = itemView.findViewById(R.id.messageCommentsNoTextView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -118,6 +112,9 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 mLongClickListener.onItemLongClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
             return true;
         }
+
+
+
     }
 
     // convenience method for getting data at click position
@@ -134,6 +131,8 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         this.mLongClickListener = itemLongClickListener;
     }
 
+
+
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position, Message message);
@@ -142,4 +141,9 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     public interface ItemLongClickListener {
         void onItemLongClick(View view, int position, Message message);
     }
+
+//    public interface ItemTouchUIUtil {
+//        void onItemSwipe(View view, int position, Message message);
+//    }
+
 }

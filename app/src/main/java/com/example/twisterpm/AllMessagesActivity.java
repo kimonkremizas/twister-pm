@@ -1,14 +1,17 @@
 package com.example.twisterpm;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -40,6 +43,7 @@ public class AllMessagesActivity extends AppCompatActivity {
     TextView verifyEmailTextView;
     Button verifyEmailButton, postNewMessageButton;
     ImageView messageDeleteIconImage;
+    AlertDialog.Builder deleteMessageAlert;
     FirebaseAuth fAuth;
     private SwipeRefreshLayout swipeRefreshLayout;
     RecyclerViewMessageAdapter adapter;
@@ -83,7 +87,9 @@ public class AllMessagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_messages);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("All messages");
         setSupportActionBar(toolbar);
+        deleteMessageAlert = new AlertDialog.Builder(this);
 
         Log.d("KIMON", "AllMessages Activity: onCreate");
         SwipeRefresh();
@@ -175,6 +181,8 @@ public class AllMessagesActivity extends AppCompatActivity {
                     messages = response.body();
                     //Log.d("KIMON", messages.get(1).getUser());
                     populateRecyclerView(messages);
+                    Toolbar toolbar = findViewById(R.id.toolbar);
+                    toolbar.setTitle("All messages ("+ messages.size()+")");
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
                     String errorMessage = "Problem " + response.code() + " " + response.message();
@@ -237,6 +245,33 @@ public class AllMessagesActivity extends AppCompatActivity {
         }
     }
 
+    public void DeleteMessage(Message singleMessage) {
+        TwisterPMService service = ApiUtils.getTwisterPMService();
+
+        Call<Message> messageCall = service.deleteMessage(singleMessage.getId());
+        messageCall.enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> call, Response<Message> response) {
+                if (response.isSuccessful()) {
+                    Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                    intent.putExtra("SINGLEMESSAGE", "Message deleted");
+                    Log.d("KIMON", "Message with id " + singleMessage.getId() + " deleted");
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Message successfully deleted", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
+                    String errorMessage = "Problem " + response.code() + " " + response.message();
+                    Log.d("KIMON", errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Message> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     private void CheckIfPostButtonShouldBeEnabled() {
         EditText newMessageEditText = findViewById(R.id.newMessageEditText);
         if (newMessageEditText.length() == 0) postNewMessageButton.setEnabled(false);
@@ -267,7 +302,6 @@ public class AllMessagesActivity extends AppCompatActivity {
         adapter.setClickListener((view, position, item) -> {
             Message message = (Message) item;
             Log.d("KIMON", item.toString());
-
             Intent intent = new Intent(this, SingleMessageActivity.class);
             intent.putExtra("SINGLEMESSAGE", message);
             Log.d("KIMON", "putExtra " + message.toString());
@@ -275,9 +309,29 @@ public class AllMessagesActivity extends AppCompatActivity {
 
         });
 
-        // TODO add setOnLongClickListener on adapter!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        adapter.setLongClickListener((view, position, item) -> {
+            //Comment comment = (Comment) item;
+            if (item.getUser().equals(fAuth.getCurrentUser().getEmail())) {
+                Log.d("KIMON", "Long click with delete permission on message: " + item.toString());
+                deleteMessageAlert.setTitle("Delete Message")
+                        .setMessage("Are you sure you want to delete this message?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DeleteMessage(item);
+                            }
+                        }).setNegativeButton("No", null)
+                        //.setView(deleteMessageView)
+                        .create().show();
+            } else {
+                Log.d("KIMON", "Long click with no delete permission on message: " + item.toString());
+            }
+        });
 
     }
+
+
+
 
     ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
             new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
@@ -289,7 +343,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                     messages.remove(viewHolder.getAdapterPosition());
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
                     Log.d("KIMON", "Message with Id=" + " deleted with a swipe!");
                 }
             };

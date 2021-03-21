@@ -56,14 +56,13 @@
                 android:textAlignment="viewStart" />
 
             <ImageButton
-                android:id="@+id/commentDeleteButton"
+                android:id="@+id/commentOverflowButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="8dp"
                 android:background="?android:attr/selectableItemBackground"
-                android:src="@drawable/delete"
-                android:tint="@android:color/holo_red_dark"
+                android:src="@drawable/ic_baseline_more_vert_24"
                 android:visibility="gone" />
 
 
