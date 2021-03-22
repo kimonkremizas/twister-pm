@@ -52,7 +52,7 @@ public class SingleMessageActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if (fAuth.getCurrentUser()!=null){
+        if (fAuth.getCurrentUser() != null) {
             getMenuInflater().inflate(R.menu.menu_main, menu);
         }
         Log.d("KIMON", "SingleMessage Activity: onCreateOptionsMenu");
@@ -70,23 +70,23 @@ public class SingleMessageActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
             case R.id.action_allMessages:
                 startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
-                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void showDeleteMessageAlert(){
+    public void showDeleteMessageAlert() {
         deleteMessageAlert.setTitle("Delete Message")
                 .setMessage("Are you sure you want to delete this message?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -149,7 +149,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         Log.d("KIMON", "Intent: " + singleMessage.toString());
         messageUserTextView.setText(singleMessage.getUser());
 
-        switch (singleMessage.getUser()){
+        switch (singleMessage.getUser()) {
             case "kimon":
                 messageUserImageView.setImageResource(R.drawable.photo1);
                 break;
@@ -171,7 +171,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         }
 
         fAuth = FirebaseAuth.getInstance();
-        if (fAuth.getCurrentUser()!=null){
+        if (fAuth.getCurrentUser() != null) {
             if (singleMessage.getUser().equals(fAuth.getCurrentUser().getEmail())) {
                 messageOverflowButton.setVisibility(View.VISIBLE);
             }
@@ -191,7 +191,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()){
+                        switch (item.getItemId()) {
                             case R.id.action_delete:
                                 showDeleteMessageAlert();
                                 break;
@@ -246,7 +246,7 @@ public class SingleMessageActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
     public void SwipeRefresh() {
@@ -266,21 +266,22 @@ public class SingleMessageActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         adapter.setLongClickListener((view, position, item) -> {
             //Comment comment = (Comment) item;
-            if (item.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
-                Log.d("KIMON", "Long click with delete permission on comment: " + item.toString());
-                deleteCommentAlert.setTitle("Delete Comment")
-                        .setMessage("Are you sure you want to delete this comment?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteComment(position);
-                            }
-                        }).setNegativeButton("No", null)
-                        // .setView(view)
-                        .create().show();
-            } else {
-                Log.d("KIMON", "Long click with no delete permission on comment: " + item.toString());
+            if (fAuth.getCurrentUser() != null) {
+                if (item.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
+                    Log.d("KIMON", "Long click with delete permission on comment: " + item.toString());
+                    deleteCommentAlert.setTitle("Delete Comment")
+                            .setMessage("Are you sure you want to delete this comment?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    DeleteComment(position);
+                                }
+                            }).setNegativeButton("No", null)
+                            // .setView(view)
+                            .create().show();
+                }
             }
+
         });
     }
 
@@ -369,7 +370,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                     intent.putExtra("SINGLEMESSAGE", "Message deleted");
                     Log.d("KIMON", "Message with id " + singleMessage.getId() + " deleted");
                     startActivity(intent);
-                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                     Toast.makeText(getApplicationContext(), "Message successfully deleted", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
@@ -422,9 +423,14 @@ public class SingleMessageActivity extends AppCompatActivity {
                     final int position = viewHolder.getAdapterPosition();
                     if (position >= 0) {
                         String user = adapter.getItem(position).getUser();
-                        if (fAuth.getCurrentUser().getEmail().equals(user) & fAuth.getCurrentUser().isEmailVerified()) {
-                            ShowDeleteCommentAlert(position);
-                            Log.d("KIMON", "Comment in position " + position + " deleted with a swipe!");
+                        if (fAuth.getCurrentUser() != null) {
+                            if (fAuth.getCurrentUser().getEmail().equals(user) & fAuth.getCurrentUser().isEmailVerified()) {
+                                ShowDeleteCommentAlert(position);
+                                Log.d("KIMON", "Comment in position " + position + " deleted with a swipe!");
+                            } else {
+                                GetComments();
+                                Log.d("KIMON", "Comment in position " + position + " NOT deleted with a swipe: no permission");
+                            }
                         } else {
                             GetComments();
                             Log.d("KIMON", "Comment in position " + position + " NOT deleted with a swipe: no permission");
@@ -437,7 +443,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         messageOverflowButton = findViewById(R.id.messageOverflowButton);
         postCommentButton = findViewById(R.id.postCommentButton);
-        if (fAuth.getCurrentUser()!=null){
+        if (fAuth.getCurrentUser() != null) {
             Log.d("KIMON", "CheckMailVerification start - " + fAuth.getCurrentUser().getEmail());
             if (!fAuth.getCurrentUser().isEmailVerified()) {
                 messageOverflowButton.setVisibility(View.GONE);

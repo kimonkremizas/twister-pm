@@ -53,11 +53,12 @@ public class AllMessagesActivity extends AppCompatActivity {
     RecyclerViewMessageAdapter adapter;
     List<Message> messages;
     RelativeLayout postCommentLayout;
+
     @Override
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if (fAuth.getCurrentUser()!=null){
+        if (fAuth.getCurrentUser() != null) {
             getMenuInflater().inflate(R.menu.menu_main, menu);
         }
 
@@ -111,14 +112,14 @@ public class AllMessagesActivity extends AppCompatActivity {
         scrollView.setFillViewport(true);
         welcomeTextView = findViewById(R.id.welcomeTextView);
 
-        if (fAuth.getCurrentUser()!=null){
+        if (fAuth.getCurrentUser() != null) {
             welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail() + "!");
-        }else{
+        } else {
             welcomeTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 }
             });
         }
@@ -169,7 +170,7 @@ public class AllMessagesActivity extends AppCompatActivity {
         verifyEmailTextView = findViewById(R.id.verifyEmailTextView);
         verifyEmailButton = findViewById(R.id.verifyEmailButton);
         postNewMessageButton = findViewById(R.id.postNewMessageButton);
-        if (fAuth.getCurrentUser()!=null){
+        if (fAuth.getCurrentUser() != null) {
             fAuth.getCurrentUser().reload();
             Log.d("KIMON", "CheckMailVerification start - " + fAuth.getCurrentUser().getEmail());
 
@@ -199,7 +200,7 @@ public class AllMessagesActivity extends AppCompatActivity {
             //swipeRefreshLayout.setRefreshing(true); // show progress
             CheckMailVerification();
             GetMessages();
-            if (fAuth.getCurrentUser()!=null){
+            if (fAuth.getCurrentUser() != null) {
                 TextView welcomeTextView = findViewById(R.id.welcomeTextView);
                 welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail() + "!");
             }
@@ -373,11 +374,11 @@ public class AllMessagesActivity extends AppCompatActivity {
 
         adapter.setLongClickListener((view, position, item) -> {
             //Comment comment = (Comment) item;
-            if (item.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
-                Log.d("KIMON", "Long click with delete permission on message: " + item.toString());
-                ShowDeleteMessageAlert(position);
-            } else {
-                Log.d("KIMON", "Long click with no delete permission on message: " + item.toString());
+            if (fAuth.getCurrentUser() != null) {
+                if (item.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
+                    Log.d("KIMON", "Long click with delete permission on message: " + item.toString());
+                    ShowDeleteMessageAlert(position);
+                }
             }
         });
 
@@ -395,9 +396,14 @@ public class AllMessagesActivity extends AppCompatActivity {
                     final int position = viewHolder.getAdapterPosition();
                     if (position >= 0) {
                         String user = adapter.getItem(position).getUser();
-                        if (fAuth.getCurrentUser().getEmail().equals(user) & fAuth.getCurrentUser().isEmailVerified()){
-                            ShowDeleteMessageAlert(position);
-                            Log.d("KIMON", "Message in position " + position + " deleted with a swipe!");
+                        if (fAuth.getCurrentUser() != null) {
+                            if (fAuth.getCurrentUser().getEmail().equals(user) & fAuth.getCurrentUser().isEmailVerified()) {
+                                ShowDeleteMessageAlert(position);
+                                Log.d("KIMON", "Message in position " + position + " deleted with a swipe!");
+                            } else {
+                                GetMessages();
+                                Log.d("KIMON", "Message in position " + position + " NOT deleted with a swipe: no permission");
+                            }
                         } else {
                             GetMessages();
                             Log.d("KIMON", "Message in position " + position + " NOT deleted with a swipe: no permission");
@@ -405,8 +411,6 @@ public class AllMessagesActivity extends AppCompatActivity {
                     }
                 }
             };
-
-
 
 
 }
