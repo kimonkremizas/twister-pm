@@ -84,7 +84,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onSuccess(AuthResult authResult) {
                         Toast.makeText(LoginActivity.this, "Successfully logged in", Toast.LENGTH_LONG).show();
                         startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
-                        finish();
+                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                        //finish();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -135,9 +136,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
             }
         });
-
-
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
     }
 }

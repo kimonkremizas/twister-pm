@@ -66,14 +66,17 @@ public class SingleMessageActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 break;
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 finish();
                 break;
             case R.id.action_allMessages:
                 startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -205,6 +208,11 @@ public class SingleMessageActivity extends AppCompatActivity {
         GetComments();
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+    }
 
     public void SwipeRefresh() {
         swipeRefreshLayout = findViewById(R.id.singleMessageSwipeRefresh);
@@ -327,6 +335,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                     intent.putExtra("SINGLEMESSAGE", "Message deleted");
                     Log.d("KIMON", "Message with id " + singleMessage.getId() + " deleted");
                     startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                     Toast.makeText(getApplicationContext(), "Message successfully deleted", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();

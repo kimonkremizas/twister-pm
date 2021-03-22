@@ -69,14 +69,17 @@ public class AllMessagesActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 break;
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 finish();
                 break;
             case R.id.action_allMessages:
                 startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -132,6 +135,11 @@ public class AllMessagesActivity extends AppCompatActivity {
         super.onResume();
         Log.d("KIMON", "AllMessages Activity: onResume");
         GetMessages();
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
     }
 
     public void CheckMailVerification() {
@@ -306,7 +314,7 @@ public class AllMessagesActivity extends AppCompatActivity {
             intent.putExtra("SINGLEMESSAGE", message);
             Log.d("KIMON", "putExtra " + message.toString());
             startActivity(intent);
-
+            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
         });
 
         adapter.setLongClickListener((view, position, item) -> {
@@ -342,9 +350,19 @@ public class AllMessagesActivity extends AppCompatActivity {
 
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    messages.remove(viewHolder.getAdapterPosition());
-                    adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-                    Log.d("KIMON", "Message with Id=" + " deleted with a swipe!");
+                final int position = viewHolder.getAdapterPosition();
+                if (position>=0){
+                    String user = adapter.getItem(position).getUser();
+                    if (fAuth.getCurrentUser().getEmail().equals(user)){
+                        //DeleteMessage(position);
+                    }
+                }
+                    Log.d("KIMON", "Message in position " + position +" deleted with a swipe!");
                 }
             };
 }
+
+
+
+//                    messages.remove(viewHolder.getAdapterPosition());
+//                            adapter.notifyItemRemoved(viewHolder.getAdapterPosition());

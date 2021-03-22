@@ -46,14 +46,17 @@ public class SettingsActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                 break;
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 finish();
                 break;
             case R.id.action_allMessages:
                 startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -145,5 +148,10 @@ public class SettingsActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
     }
 }
