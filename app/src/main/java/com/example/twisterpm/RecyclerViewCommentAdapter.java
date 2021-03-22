@@ -58,8 +58,10 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
         }
 
         fAuth = FirebaseAuth.getInstance();
-        if (comment.getUser().equals(fAuth.getCurrentUser().getEmail())) {
-            holder.commentOverflowButton.setVisibility(View.VISIBLE);
+        if (fAuth.getCurrentUser()!=null){
+            if (comment.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified() ) {
+                holder.commentOverflowButton.setVisibility(View.VISIBLE);
+            }
         }
     }
 

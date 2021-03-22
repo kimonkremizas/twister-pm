@@ -67,11 +67,11 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
 
         fAuth = FirebaseAuth.getInstance();
-        if (message.getUser().equals(fAuth.getCurrentUser().getEmail())) {
-            holder.messageOverflowButton.setVisibility(View.VISIBLE);
+        if (fAuth.getCurrentUser()!=null){
+            if (message.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
+                holder.messageOverflowButton.setVisibility(View.VISIBLE);
+            }
         }
-
-
 
    }
 

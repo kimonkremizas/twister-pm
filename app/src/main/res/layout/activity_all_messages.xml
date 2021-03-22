@@ -8,8 +8,9 @@
     android:layout_height="match_parent"
     tools:context=".AllMessagesActivity">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/toolbar"/>
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,7 +42,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
-                        android:text="Hi, stranger!"
+                        android:text="Hi, stranger! Click here to Login"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
@@ -75,50 +76,60 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/verifyEmailTextView" />
 
-                    <EditText
-                        android:id="@+id/newMessageEditText"
-                        android:layout_width="0dp"
+                    <RelativeLayout
+                        android:id="@+id/postCommentLayout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="32dp"
                         android:layout_marginEnd="16dp"
-                        android:ems="10"
-                        android:hint="What's on your mind?"
-                        android:inputType="textMultiLine"
-                        android:maxLength="120"
+                        android:orientation="vertical"
+                        android:visibility="gone"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/verifyEmailButton" />
+                        app:layout_constraintTop_toBottomOf="@id/verifyEmailButton">
 
-                    <Button
-                        android:id="@+id/postNewMessageButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="24dp"
-                        android:backgroundTint="#82B7BF"
-                        android:text="Post"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/newMessageEditText" />
+
+                        <EditText
+                            android:id="@+id/newMessageEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ems="10"
+                            android:hint="What's on your mind?"
+                            android:inputType="textMultiLine"
+                            android:maxLength="120" />
+
+                        <Button
+                            android:id="@+id/postNewMessageButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/newMessageEditText"
+                            android:layout_alignRight="@id/newMessageEditText"
+                            android:layout_marginEnd="24dp"
+                            android:backgroundTint="#82B7BF"
+                            android:text="Post" />
+
+                    </RelativeLayout>
 
                     <View
                         android:id="@+id/divider2"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="32dp"
                         android:background="?android:attr/listDivider"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/postNewMessageButton" />
+                        app:layout_constraintTop_toBottomOf="@+id/postCommentLayout" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/messagesRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="8dp"
                         android:layoutAnimation="@anim/layout_animation"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/postNewMessageButton" />
+                        app:layout_constraintTop_toBottomOf="@id/divider2" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.core.widget.NestedScrollView>

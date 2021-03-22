@@ -28,7 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
     EditText mEmail, mPassword;
-    Button loginButton;
+    Button loginButton, guestButton;
     TextView mGoToRegisterTextView, forgotPasswordTextView;
     ProgressBar progressBar;
     FirebaseAuth fAuth;
@@ -51,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         inflater = this.getLayoutInflater();
 
         loginButton = findViewById(R.id.loginButton);
+        guestButton = findViewById(R.id.guestButton);
         forgotPasswordTextView = findViewById(R.id.forgotPasswordTextView);
         mGoToRegisterTextView = findViewById(R.id.goToRegisterTextView);
 
@@ -137,6 +138,14 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
                 overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+            }
+        });
+
+        guestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
             }
         });
     }

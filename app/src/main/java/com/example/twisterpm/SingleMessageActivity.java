@@ -52,7 +52,9 @@ public class SingleMessageActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (fAuth.getCurrentUser()!=null){
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        }
         Log.d("KIMON", "SingleMessage Activity: onCreateOptionsMenu");
         return true;
     }
@@ -167,10 +169,17 @@ public class SingleMessageActivity extends AppCompatActivity {
         } else {
             messageCommentsNoTextView.setText(singleMessage.getTotalComments() + " comments");
         }
+
         fAuth = FirebaseAuth.getInstance();
-        if (singleMessage.getUser().equals(fAuth.getCurrentUser().getEmail())) {
-            messageOverflowButton.setVisibility(View.VISIBLE);
+        if (fAuth.getCurrentUser()!=null){
+            if (singleMessage.getUser().equals(fAuth.getCurrentUser().getEmail())) {
+                messageOverflowButton.setVisibility(View.VISIBLE);
+            }
+            if (fAuth.getCurrentUser().isEmailVerified()) {
+                postCommentButton.setVisibility(View.VISIBLE);
+            }
         }
+
 
         messageOverflowButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,6 +240,7 @@ public class SingleMessageActivity extends AppCompatActivity {
 
         SwipeRefresh();
         GetComments();
+        CheckMailVerification();
     }
 
     @Override
@@ -256,7 +266,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         adapter.setLongClickListener((view, position, item) -> {
             //Comment comment = (Comment) item;
-            if (item.getUser().equals(fAuth.getCurrentUser().getEmail())) {
+            if (item.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
                 Log.d("KIMON", "Long click with delete permission on comment: " + item.toString());
                 deleteCommentAlert.setTitle("Delete Comment")
                         .setMessage("Are you sure you want to delete this comment?")
@@ -412,7 +422,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                     final int position = viewHolder.getAdapterPosition();
                     if (position >= 0) {
                         String user = adapter.getItem(position).getUser();
-                        if (fAuth.getCurrentUser().getEmail().equals(user)) {
+                        if (fAuth.getCurrentUser().getEmail().equals(user) & fAuth.getCurrentUser().isEmailVerified()) {
                             ShowDeleteCommentAlert(position);
                             Log.d("KIMON", "Comment in position " + position + " deleted with a swipe!");
                         } else {
@@ -422,5 +432,22 @@ public class SingleMessageActivity extends AppCompatActivity {
                     }
                 }
             };
+
+    public void CheckMailVerification() {
+        fAuth = FirebaseAuth.getInstance();
+        messageOverflowButton = findViewById(R.id.messageOverflowButton);
+        postCommentButton = findViewById(R.id.postCommentButton);
+        if (fAuth.getCurrentUser()!=null){
+            Log.d("KIMON", "CheckMailVerification start - " + fAuth.getCurrentUser().getEmail());
+            if (!fAuth.getCurrentUser().isEmailVerified()) {
+                messageOverflowButton.setVisibility(View.GONE);
+                postCommentButton.setVisibility(View.GONE);
+                Log.d("KIMON", "CheckMailVerification: not verified - " + fAuth.getCurrentUser().getEmail());
+            }
+
+            Log.d("KIMON", "CheckMailVerification end - " + fAuth.getCurrentUser().getEmail());
+        }
+
+    }
 
 }

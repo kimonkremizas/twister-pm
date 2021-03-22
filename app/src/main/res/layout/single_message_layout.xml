@@ -80,9 +80,10 @@
                 android:layout_alignBottom="@id/messageCommentsNoTextView"
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@id/messageCommentsNoTextView"
-                android:src="@drawable/reply"
                 android:background="?android:attr/selectableItemBackground"
-                android:tint="@android:color/black" />
+                android:src="@drawable/reply"
+                android:tint="@android:color/black"
+                android:visibility="gone" />
 
 
         </RelativeLayout>
