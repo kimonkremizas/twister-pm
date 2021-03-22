@@ -1,8 +1,10 @@
 package com.example.twisterpm;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -94,6 +96,29 @@ public class SingleMessageActivity extends AppCompatActivity {
                 //.setView(deleteMessageView)
                 .create().show();
     }
+
+    public void ShowDeleteCommentAlert(int position) {
+        deleteMessageAlert.setTitle("Delete Message")
+                .setMessage("Are you sure you want to delete this message?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DeleteComment(position);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                GetComments();
+            }
+        }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                GetComments();
+            }
+        })
+                .create().show();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,6 +252,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.commentsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerViewCommentAdapter(this, comments);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
         adapter.setLongClickListener((view, position, item) -> {
             //Comment comment = (Comment) item;
@@ -237,9 +263,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-                                DeleteComment(item);
-
+                                DeleteComment(position);
                             }
                         }).setNegativeButton("No", null)
                         // .setView(view)
@@ -351,10 +375,10 @@ public class SingleMessageActivity extends AppCompatActivity {
         });
     }
 
-    public void DeleteComment(Comment selectedComment) {
+    public void DeleteComment(int position) {
         TwisterPMService service = ApiUtils.getTwisterPMService();
 
-        Call<Comment> commentCall = service.deleteComment(singleMessage.getId(), selectedComment.getId());
+        Call<Comment> commentCall = service.deleteComment(singleMessage.getId(), adapter.getItem(position).getId());
         commentCall.enqueue(new Callback<Comment>() {
             @Override
             public void onResponse(Call<Comment> call, Response<Comment> response) {
@@ -376,5 +400,27 @@ public class SingleMessageActivity extends AppCompatActivity {
         });
     }
 
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+            new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    final int position = viewHolder.getAdapterPosition();
+                    if (position >= 0) {
+                        String user = adapter.getItem(position).getUser();
+                        if (fAuth.getCurrentUser().getEmail().equals(user)) {
+                            ShowDeleteCommentAlert(position);
+                            Log.d("KIMON", "Comment in position " + position + " deleted with a swipe!");
+                        } else {
+                            GetComments();
+                            Log.d("KIMON", "Comment in position " + position + " NOT deleted with a swipe: no permission");
+                        }
+                    }
+                }
+            };
 
 }

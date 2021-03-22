@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -69,17 +71,17 @@ public class AllMessagesActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 break;
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
             case R.id.action_allMessages:
                 startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
-                overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -136,14 +138,14 @@ public class AllMessagesActivity extends AppCompatActivity {
         Log.d("KIMON", "AllMessages Activity: onResume");
         GetMessages();
     }
+
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
     public void CheckMailVerification() {
-
         fAuth = FirebaseAuth.getInstance();
         fAuth.getCurrentUser().reload();
         Log.d("KIMON", "CheckMailVerification start - " + fAuth.getCurrentUser().getEmail());
@@ -190,7 +192,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                     //Log.d("KIMON", messages.get(1).getUser());
                     populateRecyclerView(messages);
                     Toolbar toolbar = findViewById(R.id.toolbar);
-                    toolbar.setTitle("All messages ("+ messages.size()+")");
+                    toolbar.setTitle("All messages (" + messages.size() + ")");
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
                     String errorMessage = "Problem " + response.code() + " " + response.message();
@@ -253,18 +255,19 @@ public class AllMessagesActivity extends AppCompatActivity {
         }
     }
 
-    public void DeleteMessage(Message singleMessage) {
+    public void DeleteMessage(int position) {
         TwisterPMService service = ApiUtils.getTwisterPMService();
 
-        Call<Message> messageCall = service.deleteMessage(singleMessage.getId());
+        Call<Message> messageCall = service.deleteMessage(adapter.getItem(position).getId());
         messageCall.enqueue(new Callback<Message>() {
             @Override
             public void onResponse(Call<Message> call, Response<Message> response) {
                 if (response.isSuccessful()) {
-                    Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
-                    intent.putExtra("SINGLEMESSAGE", "Message deleted");
-                    Log.d("KIMON", "Message with id " + singleMessage.getId() + " deleted");
-                    startActivity(intent);
+                    //Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                    //intent.putExtra("SINGLEMESSAGE", "Message deleted");
+                    Log.d("KIMON", "Message with id " + adapter.getItem(position).getId() + " deleted");
+                    //startActivity(intent);
+                    GetMessages();
                     Toast.makeText(getApplicationContext(), "Message successfully deleted", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
@@ -278,6 +281,28 @@ public class AllMessagesActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void ShowDeleteMessageAlert(int position) {
+        deleteMessageAlert.setTitle("Delete Message")
+                .setMessage("Are you sure you want to delete this message?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DeleteMessage(position);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        GetMessages();
+                    }
+                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        GetMessages();
+                    }
+                })
+                .create().show();
     }
 
     private void CheckIfPostButtonShouldBeEnabled() {
@@ -298,7 +323,6 @@ public class AllMessagesActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
-
     }
 
     private void populateRecyclerView(List<Message> messages) {
@@ -314,32 +338,20 @@ public class AllMessagesActivity extends AppCompatActivity {
             intent.putExtra("SINGLEMESSAGE", message);
             Log.d("KIMON", "putExtra " + message.toString());
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
         adapter.setLongClickListener((view, position, item) -> {
             //Comment comment = (Comment) item;
             if (item.getUser().equals(fAuth.getCurrentUser().getEmail())) {
                 Log.d("KIMON", "Long click with delete permission on message: " + item.toString());
-                deleteMessageAlert.setTitle("Delete Message")
-                        .setMessage("Are you sure you want to delete this message?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                DeleteMessage(item);
-                            }
-                        }).setNegativeButton("No", null)
-                        //.setView(deleteMessageView)
-                        .create().show();
+                ShowDeleteMessageAlert(position);
             } else {
                 Log.d("KIMON", "Long click with no delete permission on message: " + item.toString());
             }
         });
 
     }
-
-
-
 
     ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
             new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
@@ -350,19 +362,21 @@ public class AllMessagesActivity extends AppCompatActivity {
 
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                final int position = viewHolder.getAdapterPosition();
-                if (position>=0){
-                    String user = adapter.getItem(position).getUser();
-                    if (fAuth.getCurrentUser().getEmail().equals(user)){
-                        //DeleteMessage(position);
+                    final int position = viewHolder.getAdapterPosition();
+                    if (position >= 0) {
+                        String user = adapter.getItem(position).getUser();
+                        if (fAuth.getCurrentUser().getEmail().equals(user)) {
+                            ShowDeleteMessageAlert(position);
+                            Log.d("KIMON", "Message in position " + position + " deleted with a swipe!");
+                        } else {
+                            GetMessages();
+                            Log.d("KIMON", "Message in position " + position + " NOT deleted with a swipe: no permission");
+                        }
                     }
-                }
-                    Log.d("KIMON", "Message in position " + position +" deleted with a swipe!");
                 }
             };
 }
 
 
 
-//                    messages.remove(viewHolder.getAdapterPosition());
-//                            adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+
