@@ -37,7 +37,7 @@ import retrofit2.Response;
 
 public class SingleMessageActivity extends AppCompatActivity {
     Message singleMessage;
-    Comment selectedComment;
+    //Comment selectedComment;
     TextView messageUserTextView, messageContentTextView, messageCommentsNoTextView;
     ImageButton messageOverflowButton, postCommentButton;
     ImageView messageUserImageView;
@@ -435,7 +435,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         });
     }
 
-    ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+    final ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
             new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
                 @Override
                 public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {

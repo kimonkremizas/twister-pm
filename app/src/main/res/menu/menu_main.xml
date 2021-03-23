@@ -18,7 +18,7 @@
         android:icon="@drawable/ic_baseline_message_24"
         android:orderInCategory="100"
         android:title="All"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 <!--    <item-->
 <!--        android:id="@+id/action_myMessages"-->
 <!--        android:orderInCategory="100"-->

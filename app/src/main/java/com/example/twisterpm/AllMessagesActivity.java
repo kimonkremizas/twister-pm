@@ -49,14 +49,14 @@ import retrofit2.Response;
 public class AllMessagesActivity extends AppCompatActivity {
     TextView verifyEmailTextView, welcomeTextView;
     Button verifyEmailButton, postNewMessageButton;
-    ImageView messageDeleteIconImage;
+    //ImageView messageDeleteIconImage;
     AlertDialog.Builder deleteMessageAlert;
     FirebaseAuth fAuth;
     private SwipeRefreshLayout swipeRefreshLayout;
     RecyclerViewMessageAdapter adapter;
     List<Message> messages;
     RelativeLayout postCommentLayout;
-    ImageButton messageOverflowButton;
+    //ImageButton messageOverflowButton;
     @Override
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -226,7 +226,7 @@ public class AllMessagesActivity extends AppCompatActivity {
             public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
                 swipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful()) {
-                    String responseMessage = response.message();
+                    //String responseMessage = response.message();
                     messages = response.body();
                     //Log.d("KIMON", messages.get(1).getUser());
                     populateRecyclerView(messages);
@@ -373,11 +373,11 @@ public class AllMessagesActivity extends AppCompatActivity {
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
         adapter.setClickListener((view, position, item) -> {
-            Message message = (Message) item;
+            //Message message = (Message) item;
             Log.d("KIMON", item.toString());
             Intent intent = new Intent(this, SingleMessageActivity.class);
-            intent.putExtra("SINGLEMESSAGE", message);
-            Log.d("KIMON", "putExtra " + message.toString());
+            intent.putExtra("SINGLEMESSAGE", item);
+            Log.d("KIMON", "putExtra " + item.toString());
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
@@ -415,7 +415,7 @@ public class AllMessagesActivity extends AppCompatActivity {
         });
     }
 
-    ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
+    final ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
             new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
                 @Override
                 public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {

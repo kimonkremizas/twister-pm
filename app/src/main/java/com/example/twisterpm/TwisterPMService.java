@@ -13,7 +13,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface TwisterPMService {
-    public final String apiUrl = "https://anbo-restmessages.azurewebsites.net/api/";
+    //public final String apiUrl = "https://anbo-restmessages.azurewebsites.net/api/";
 
     @GET("messages")
     Call<List<Message>> getMessages();
