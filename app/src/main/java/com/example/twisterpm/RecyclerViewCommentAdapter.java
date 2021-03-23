@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.twisterpm.model.Comment;
+import com.example.twisterpm.model.Message;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private ItemLongClickListener mLongClickListener;
+    private RecyclerViewCommentAdapter.RVButtonClickListener rvButtonClickListener;
     FirebaseAuth fAuth;
 
     // data is passed into the constructor
@@ -85,12 +87,17 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
             commentOverflowButton = itemView.findViewById(R.id.commentOverflowButton);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+            commentOverflowButton.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null)
-                mClickListener.onItemClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
+            if (rvButtonClickListener != null & view==commentOverflowButton){
+                rvButtonClickListener.onRVButtonClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
+            }else {
+                if (mClickListener != null)
+                    mClickListener.onItemClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
+            }
         }
 
         @Override
@@ -115,6 +122,10 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
         this.mLongClickListener = itemLongClickListener;
     }
 
+    void setRVButtonClickListener(RecyclerViewCommentAdapter.RVButtonClickListener rvButtonClickListener) {
+        this.rvButtonClickListener = rvButtonClickListener;
+    }
+
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position, Comment comment);
@@ -122,5 +133,9 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public interface ItemLongClickListener {
         void onItemLongClick(View view, int position, Comment comment);
+    }
+
+    public interface RVButtonClickListener {
+        void onRVButtonClick(View view, int position, Comment comment);
     }
 }

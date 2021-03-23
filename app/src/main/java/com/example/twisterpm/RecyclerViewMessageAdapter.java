@@ -1,6 +1,7 @@
 package com.example.twisterpm;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,12 +18,12 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
-public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerViewMessageAdapter.ViewHolder>  {
+public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerViewMessageAdapter.ViewHolder> {
     private final List<Message> data;
     private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
+    private RVButtonClickListener rvButtonClickListener;
     private ItemLongClickListener mLongClickListener;
-    //private ItemTouchUIUtil mTouchUIUtil;
 
     FirebaseAuth fAuth;
 
@@ -52,7 +54,7 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             holder.messageCommentsNoTextView.setText(message.getTotalComments().toString() + " comments");
         }
 
-        switch (message.getUser()){
+        switch (message.getUser()) {
             case "kimon":
                 holder.imageView.setImageResource(R.drawable.photo1);
                 break;
@@ -67,13 +69,12 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         }
 
         fAuth = FirebaseAuth.getInstance();
-        if (fAuth.getCurrentUser()!=null){
+        if (fAuth.getCurrentUser() != null) {
             if (message.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
                 holder.messageOverflowButton.setVisibility(View.VISIBLE);
             }
         }
-
-   }
+    }
 
     // total number of rows
     @Override
@@ -82,9 +83,8 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
 
-
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         final TextView messageContentTextView, messageUserTextView, messageCommentsNoTextView;
         final ImageView imageView;
         final ImageButton messageOverflowButton;
@@ -98,12 +98,17 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             messageCommentsNoTextView = itemView.findViewById(R.id.messageCommentsNoTextView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+            messageOverflowButton.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null)
-                mClickListener.onItemClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
+            if (rvButtonClickListener != null & view==messageOverflowButton){
+                rvButtonClickListener.onRVButtonClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
+            }else{
+                if (mClickListener != null)
+                    mClickListener.onItemClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
+            }
         }
 
         @Override
@@ -112,9 +117,6 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
                 mLongClickListener.onItemLongClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
             return true;
         }
-
-
-
     }
 
     // convenience method for getting data at click position
@@ -131,6 +133,9 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         this.mLongClickListener = itemLongClickListener;
     }
 
+    void setRVButtonClickListener(RVButtonClickListener rvButtonClickListener) {
+        this.rvButtonClickListener = rvButtonClickListener;
+    }
 
 
     // parent activity will implement this method to respond to click events
@@ -142,8 +147,7 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
         void onItemLongClick(View view, int position, Message message);
     }
 
-//    public interface ItemTouchUIUtil {
-//        void onItemSwipe(View view, int position, Message message);
-//    }
-
+    public interface RVButtonClickListener {
+        void onRVButtonClick(View view, int position, Message message);
+    }
 }

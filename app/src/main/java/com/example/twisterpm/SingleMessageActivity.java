@@ -86,7 +86,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void showDeleteMessageAlert() {
+    public void ShowDeleteMessageAlert() {
         deleteMessageAlert.setTitle("Delete Message")
                 .setMessage("Are you sure you want to delete this message?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -193,7 +193,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_delete:
-                                showDeleteMessageAlert();
+                                ShowDeleteMessageAlert();
                                 break;
                             case R.id.action_edit:
                                 Toast.makeText(getApplicationContext(), "You pressed Edit", Toast.LENGTH_LONG).show();
@@ -283,6 +283,30 @@ public class SingleMessageActivity extends AppCompatActivity {
             }
 
         });
+
+        adapter.setRVButtonClickListener((view, position, item) -> {
+            Log.d("KIMON", "Overflow button click on message: " + item.toString());
+            PopupMenu popup = new PopupMenu(getApplicationContext(), view);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.menu_overflow, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.action_delete:
+                            ShowDeleteCommentAlert(position);
+                            break;
+                        case R.id.action_edit:
+                            Toast.makeText(getApplicationContext(), "You pressed Edit", Toast.LENGTH_LONG).show();
+                            break;
+                    }
+                    return true;
+                }
+            });
+            popup.show();
+        });
+
+
     }
 
     public void GetComments() {

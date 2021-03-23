@@ -22,12 +22,15 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,7 +56,7 @@ public class AllMessagesActivity extends AppCompatActivity {
     RecyclerViewMessageAdapter adapter;
     List<Message> messages;
     RelativeLayout postCommentLayout;
-
+    ImageButton messageOverflowButton;
     @Override
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -104,6 +107,7 @@ public class AllMessagesActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         deleteMessageAlert = new AlertDialog.Builder(this);
 
+
         Log.d("KIMON", "AllMessages Activity: onCreate");
         SwipeRefresh();
         CheckMailVerification();
@@ -150,6 +154,10 @@ public class AllMessagesActivity extends AppCompatActivity {
                 PostMessage();
             }
         });
+
+
+
+
     }
 
     @Override
@@ -315,6 +323,7 @@ public class AllMessagesActivity extends AppCompatActivity {
     }
 
     public void ShowDeleteMessageAlert(int position) {
+        //deleteMessageAlert = new AlertDialog.Builder(getApplicationContext());
         deleteMessageAlert.setTitle("Delete Message")
                 .setMessage("Are you sure you want to delete this message?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -335,6 +344,7 @@ public class AllMessagesActivity extends AppCompatActivity {
         })
                 .create().show();
     }
+
 
     private void CheckIfPostButtonShouldBeEnabled() {
         EditText newMessageEditText = findViewById(R.id.newMessageEditText);
@@ -382,6 +392,27 @@ public class AllMessagesActivity extends AppCompatActivity {
             }
         });
 
+        adapter.setRVButtonClickListener((view, position, item) -> {
+                    Log.d("KIMON", "Overflow button click on message: " + item.toString());
+            PopupMenu popup = new PopupMenu(getApplicationContext(), view);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.menu_overflow, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.action_delete:
+                            ShowDeleteMessageAlert(position);
+                            break;
+                        case R.id.action_edit:
+                            Toast.makeText(getApplicationContext(), "You pressed Edit", Toast.LENGTH_LONG).show();
+                            break;
+                    }
+                    return true;
+                }
+            });
+            popup.show();
+        });
     }
 
     ItemTouchHelper.SimpleCallback itemTouchHelperCallback =
@@ -411,8 +442,6 @@ public class AllMessagesActivity extends AppCompatActivity {
                     }
                 }
             };
-
-
 }
 
 
