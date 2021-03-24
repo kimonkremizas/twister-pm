@@ -30,6 +30,7 @@ import com.example.twisterpm.model.Message;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -448,7 +449,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                     if (position >= 0) {
                         String user = adapter.getItem(position).getUser();
                         if (fAuth.getCurrentUser() != null) {
-                            if (fAuth.getCurrentUser().getEmail().equals(user) & fAuth.getCurrentUser().isEmailVerified()) {
+                            if (Objects.equals(fAuth.getCurrentUser().getEmail(), user) & fAuth.getCurrentUser().isEmailVerified()) {
                                 ShowDeleteCommentAlert(position);
                                 Log.d("KIMON", "Comment in position " + position + " deleted with a swipe!");
                             } else {
@@ -473,8 +474,9 @@ public class SingleMessageActivity extends AppCompatActivity {
                 messageOverflowButton.setVisibility(View.GONE);
                 postCommentButton.setVisibility(View.GONE);
                 Log.d("KIMON", "CheckMailVerification: not verified - " + fAuth.getCurrentUser().getEmail());
+            } else {
+                Log.d("KIMON", "CheckMailVerification: verified - " + fAuth.getCurrentUser().getEmail());
             }
-
             Log.d("KIMON", "CheckMailVerification end - " + fAuth.getCurrentUser().getEmail());
         }
 

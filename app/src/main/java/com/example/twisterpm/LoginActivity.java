@@ -84,7 +84,9 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         Toast.makeText(LoginActivity.this, "Successfully logged in", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                        Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                         overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                         //finish();
                     }
