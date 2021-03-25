@@ -67,6 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Settings");
         setSupportActionBar(toolbar);
         Log.d("KIMON", "Settings Activity: onCreate");
         newPassword = findViewById(R.id.newPasswordEditText);
