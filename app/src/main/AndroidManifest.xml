@@ -13,7 +13,6 @@
         android:theme="@style/Theme.TwisterPM">
         <activity android:name=".AllMessagesActivity"
             android:label="@string/app_name"
-
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,6 +38,3 @@
     </application>
 
 </manifest>
-
-
-<!--    android:theme="@style/Theme.TwisterPM.NoActionBar"-->
