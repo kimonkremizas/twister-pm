@@ -2,9 +2,13 @@ package com.example.twisterpm;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,11 +25,18 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+import static com.example.twisterpm.ApiUtils.MY_PREFS;
+
 public class SettingsActivity extends AppCompatActivity {
 
     EditText newPassword, newPasswordConfirmation, newEmail;
     Button updatePasswordButton;
     Button updateEmailButton;
+    RadioGroup selectThemeRadioGroup;
+    RadioButton lightThemeRadioButton, darkThemeRadioButton;
     FirebaseUser user;
 
     @Override
@@ -51,14 +64,14 @@ public class SettingsActivity extends AppCompatActivity {
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
             case R.id.action_allMessages:
                 Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -77,6 +90,28 @@ public class SettingsActivity extends AppCompatActivity {
         updatePasswordButton = findViewById(R.id.updatePasswordButton);
         newEmail = findViewById(R.id.newEmailEditText);
         updateEmailButton = findViewById(R.id.updateEmailButton);
+
+        selectThemeRadioGroup = findViewById(R.id.selectThemeRadioGroup);
+        lightThemeRadioButton = findViewById(R.id.lightThemeRadioButton);
+        darkThemeRadioButton = findViewById(R.id.darkThemeRadioButton);
+
+
+        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                darkThemeRadioButton.setChecked(true);
+                break;
+            case Configuration.UI_MODE_NIGHT_NO:
+                lightThemeRadioButton.setChecked(true);
+                break;
+        }
+
+        selectThemeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                doOnThemeChanged(group,checkedId);
+            }
+        });
+
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         updatePasswordButton.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +168,7 @@ public class SettingsActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(newEmail.getText().toString().trim().equals(user.getEmail())){
+                if (newEmail.getText().toString().trim().equals(user.getEmail())) {
                     newEmail.setError("Please select a different e-mail");
                     return;
                 }
@@ -152,9 +187,29 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+
+    private void doOnThemeChanged(RadioGroup group, int checkedId) {
+        int checkedRadioId = group.getCheckedRadioButtonId();
+        SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS, MODE_PRIVATE).edit();
+
+         if (checkedRadioId == R.id.lightThemeRadioButton) {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+            editor.putString("Theme","Light");
+            recreate();
+            Toast.makeText(this, "Theme: Light", Toast.LENGTH_SHORT).show();
+        } else if (checkedRadioId == R.id.darkThemeRadioButton) {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+            editor.putString("Theme","Dark");
+            recreate();
+            Toast.makeText(this, "Theme: Dark", Toast.LENGTH_SHORT).show();
+        }
+        editor.apply();
     }
 }

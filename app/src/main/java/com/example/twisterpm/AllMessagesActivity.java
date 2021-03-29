@@ -3,6 +3,7 @@ package com.example.twisterpm;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
@@ -14,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,6 +42,10 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+import static com.example.twisterpm.ApiUtils.MY_PREFS;
 
 public class AllMessagesActivity extends AppCompatActivity {
     TextView verifyEmailTextView, welcomeTextView;
@@ -98,12 +104,26 @@ public class AllMessagesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // SET THEME FROM PREFERENCES FILE
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS, MODE_PRIVATE);
+        String theme = prefs.getString("Theme", "No theme defined");//"No name defined" is the default value.
+        Log.d("KIMON","Theme from preferences file: "+theme);
+
+        if (theme.equals("Dark")) {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+        } else if(theme.equals("Light"))   {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+        }
+
         setContentView(R.layout.activity_all_messages);
         postCommentLayout = findViewById(R.id.postCommentLayout);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("All messages");
         setSupportActionBar(toolbar);
         deleteMessageAlert = new AlertDialog.Builder(this);
+
+
 
 
         Log.d("KIMON", "AllMessages Activity: onCreate");
