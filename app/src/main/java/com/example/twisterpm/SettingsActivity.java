@@ -46,7 +46,7 @@ public class SettingsActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
@@ -55,7 +55,9 @@ public class SettingsActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.action_allMessages:
-                startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
                 break;
         }

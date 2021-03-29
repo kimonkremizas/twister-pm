@@ -27,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.core.widget.NestedScrollView
-                android:id="@+id/firstFragmentScrollView"
+                android:id="@+id/allMessagesScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp">
@@ -106,7 +106,6 @@
                             android:layout_below="@id/newMessageEditText"
                             android:layout_alignRight="@id/newMessageEditText"
                             android:layout_marginEnd="24dp"
-                            android:backgroundTint="#82B7BF"
                             android:text="Post" />
 
                     </RelativeLayout>

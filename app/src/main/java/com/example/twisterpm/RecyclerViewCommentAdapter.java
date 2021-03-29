@@ -45,18 +45,36 @@ public class RecyclerViewCommentAdapter extends RecyclerView.Adapter<RecyclerVie
         holder.commentContentTextView.setText(comment.getContent());
         holder.commentUserTextView.setText(comment.getUser());
 
-        switch (comment.getUser()) {
-            case "kimon":
-                holder.imageView.setImageResource(R.drawable.photo1);
-                break;
-            case "rania@hotmail.com":
-                holder.imageView.setImageResource(R.drawable.rania);
-                break;
-            case "anbo":
-                holder.imageView.setImageResource(R.drawable.anbo);
-                break;
-            default:
-                holder.imageView.setImageResource(R.drawable.philip);
+        if (comment.getUser().contains("kremizas") || comment.getUser().contains("kimon")) {
+            holder.imageView.setImageResource(R.drawable.a005man);
+        } else if (comment.getUser().contains("dominik")) {
+            holder.imageView.setImageResource(R.drawable.a002man);
+        } else if (comment.getUser().contains("anbo") || comment.getUser().contains("anders")) {
+            holder.imageView.setImageResource(R.drawable.a013man);
+        } else if (comment.getUser().contains("katerina")) {
+            holder.imageView.setImageResource(R.drawable.a003woman);
+        } else if (comment.getUser().contains("rania")) {
+            holder.imageView.setImageResource(R.drawable.a004woman);
+        } else if (comment.getUser().contains("ani")) {
+            holder.imageView.setImageResource(R.drawable.a001woman);
+        } else if (comment.getUser().contains("uks")) {
+            holder.imageView.setImageResource(R.drawable.a006woman);
+        } else if (comment.getUser().contains("nicolai")) {
+            holder.imageView.setImageResource(R.drawable.a011man);
+        } else if (comment.getUser().contains("o")) {
+            holder.imageView.setImageResource(R.drawable.a007woman);
+        } else if (comment.getUser().contains("y")) {
+            holder.imageView.setImageResource(R.drawable.a008woman);
+        } else if (comment.getUser().contains("t")) {
+            holder.imageView.setImageResource(R.drawable.a009woman);
+        } else if (comment.getUser().contains("s")) {
+            holder.imageView.setImageResource(R.drawable.a010woman);
+        } else if (comment.getUser().contains("z")) {
+            holder.imageView.setImageResource(R.drawable.a012woman);
+        } else if (comment.getUser().contains("m")) {
+            holder.imageView.setImageResource(R.drawable.a014man);
+        } else {
+            holder.imageView.setImageResource(R.drawable.a015woman);
         }
 
         fAuth = FirebaseAuth.getInstance();

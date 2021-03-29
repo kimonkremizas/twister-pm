@@ -20,20 +20,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".SingleMessageActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".SettingsActivity"
+            android:theme="@style/Theme.TwisterPM.login"/>
         <activity android:name=".LoginActivity"
+            android:theme="@style/Theme.TwisterPM.login"
             android:noHistory="true">
-
-<!--        <intent-filter>-->
-<!--            <action android:name="android.intent.action.MAIN" />-->
-<!--            <category android:name="android.intent.category.LAUNCHER" />-->
-<!--        </intent-filter>-->
         </activity>
-        <activity android:name=".RegisterActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+        <activity android:name=".RegisterActivity"
+            android:theme="@style/Theme.TwisterPM.login">
         </activity>
     </application>
 

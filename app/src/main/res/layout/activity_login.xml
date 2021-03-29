@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CEDDD0"
+    android:theme="@style/Theme.TwisterPM"
     tools:context=".LoginActivity">
 
     <TextView
@@ -35,7 +35,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="#FFFFFF"
         android:ems="10"
         android:hint="E-mail"
         android:inputType="textEmailAddress"
@@ -53,7 +52,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="#FFFFFF"
         android:ems="10"
         android:hint="Password"
         android:padding="10dp"
@@ -69,7 +67,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:backgroundTint="#63979F"
+        android:theme="@style/Theme.TwisterPM"
         android:text="Log in"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,6 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
+        android:padding="8dp"
         android:text="Don't have an account? Register"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -115,30 +114,16 @@
         android:id="@+id/guestButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#63979F"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="Continue as Guest"
-        android:textSize="12sp"
         android:textAllCaps="false"
+        android:textSize="12sp"
+        android:theme="@style/Theme.TwisterPM"
         app:layout_constraintBottom_toTopOf="@+id/goToRegisterTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/forgotPasswordTextView"
         app:layout_constraintVertical_bias="0.83" />
-
-
-    <!--    <Button-->
-<!--        android:id="@+id/forgotPasswordButton"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="16dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        android:layout_marginEnd="16dp"-->
-<!--        android:backgroundTint="#63979F"-->
-<!--        android:text="Forgot Password"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/loginButton" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

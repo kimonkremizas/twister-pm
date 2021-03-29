@@ -54,18 +54,50 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
             holder.messageCommentsNoTextView.setText(message.getTotalComments().toString() + " comments");
         }
 
-        switch (message.getUser()) {
-            case "kimon":
-                holder.imageView.setImageResource(R.drawable.photo1);
-                break;
-            case "rania@hotmail.com":
-                holder.imageView.setImageResource(R.drawable.rania);
-                break;
-            case "anbo":
-                holder.imageView.setImageResource(R.drawable.anbo);
-                break;
-            default:
-                holder.imageView.setImageResource(R.drawable.philip);
+//        switch (message.getUser()) {
+//            case "kimon":
+//                holder.imageView.setImageResource(R.drawable.photo1);
+//                break;
+//            case "rania@hotmail.com":
+//                holder.imageView.setImageResource(R.drawable.rania);
+//                break;
+//            case "anbo":
+//                holder.imageView.setImageResource(R.drawable.anbo);
+//                break;
+//            default:
+//                holder.imageView.setImageResource(R.drawable.philip);
+//        }
+
+        if (message.getUser().contains("kremizas") || message.getUser().contains("kimon")) {
+            holder.imageView.setImageResource(R.drawable.a005man);
+        } else if (message.getUser().contains("dominik")) {
+            holder.imageView.setImageResource(R.drawable.a002man);
+        } else if (message.getUser().contains("anbo") || message.getUser().contains("anders")) {
+            holder.imageView.setImageResource(R.drawable.a013man);
+        } else if (message.getUser().contains("katerina")) {
+            holder.imageView.setImageResource(R.drawable.a003woman);
+        } else if (message.getUser().contains("rania")) {
+            holder.imageView.setImageResource(R.drawable.a004woman);
+        } else if (message.getUser().contains("ani")) {
+            holder.imageView.setImageResource(R.drawable.a001woman);
+        } else if (message.getUser().contains("uks")) {
+            holder.imageView.setImageResource(R.drawable.a006woman);
+        } else if (message.getUser().contains("nicolai")) {
+            holder.imageView.setImageResource(R.drawable.a011man);
+        } else if (message.getUser().contains("o")) {
+            holder.imageView.setImageResource(R.drawable.a007woman);
+        } else if (message.getUser().contains("y")) {
+            holder.imageView.setImageResource(R.drawable.a008woman);
+        } else if (message.getUser().contains("t")) {
+            holder.imageView.setImageResource(R.drawable.a009woman);
+        } else if (message.getUser().contains("s")) {
+            holder.imageView.setImageResource(R.drawable.a010woman);
+        } else if (message.getUser().contains("z")) {
+            holder.imageView.setImageResource(R.drawable.a012woman);
+        } else if (message.getUser().contains("m")) {
+            holder.imageView.setImageResource(R.drawable.a014man);
+        } else {
+            holder.imageView.setImageResource(R.drawable.a015woman);
         }
 
         fAuth = FirebaseAuth.getInstance();
@@ -103,9 +135,9 @@ public class RecyclerViewMessageAdapter extends RecyclerView.Adapter<RecyclerVie
 
         @Override
         public void onClick(View view) {
-            if (rvButtonClickListener != null & view==messageOverflowButton){
+            if (rvButtonClickListener != null & view == messageOverflowButton) {
                 rvButtonClickListener.onRVButtonClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
-            }else{
+            } else {
                 if (mClickListener != null)
                     mClickListener.onItemClick(view, getAdapterPosition(), data.get(getAdapterPosition()));
             }

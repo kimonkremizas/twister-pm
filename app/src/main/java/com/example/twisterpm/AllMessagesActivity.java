@@ -3,33 +3,27 @@ package com.example.twisterpm;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.solver.widgets.Helper;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,6 +34,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -56,6 +51,7 @@ public class AllMessagesActivity extends AppCompatActivity {
     RecyclerViewMessageAdapter adapter;
     List<Message> messages;
     RelativeLayout postCommentLayout;
+
     //ImageButton messageOverflowButton;
     @Override
 
@@ -90,7 +86,9 @@ public class AllMessagesActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.action_allMessages:
-                startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }
@@ -112,7 +110,7 @@ public class AllMessagesActivity extends AppCompatActivity {
         SwipeRefresh();
         CheckMailVerification();
 
-        NestedScrollView scrollView = findViewById(R.id.firstFragmentScrollView);
+        NestedScrollView scrollView = findViewById(R.id.allMessagesScrollView);
         scrollView.setFillViewport(true);
         welcomeTextView = findViewById(R.id.welcomeTextView);
 
@@ -156,8 +154,6 @@ public class AllMessagesActivity extends AppCompatActivity {
         });
 
 
-
-
     }
 
     @Override
@@ -166,6 +162,21 @@ public class AllMessagesActivity extends AppCompatActivity {
         Log.d("KIMON", "AllMessages Activity: onResume");
         GetMessages();
     }
+
+//    @Override
+//    protected void onSaveInstanceState(@NonNull Bundle outState) {
+//        outState.putSerializable("KIMON", new ArrayList(messages));
+//        super.onSaveInstanceState(outState);
+//        Log.d("KIMON", "AllMessages Activity: onSaveInstanceState");
+//    }
+//
+//    @Override
+//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+//        messages = (List<Message>) savedInstanceState.getSerializable("KIMON");
+//        PopulateRecyclerView(messages);
+//        super.onRestoreInstanceState(savedInstanceState);
+//        Log.d("KIMON", "AllMessages Activity: onRestoreInstanceState");
+//    }
 
     @Override
     public void finish() {
@@ -180,7 +191,7 @@ public class AllMessagesActivity extends AppCompatActivity {
         postNewMessageButton = findViewById(R.id.postNewMessageButton);
         if (fAuth.getCurrentUser() != null) {
             fAuth.getCurrentUser().reload();
-            Log.d("KIMON", "CheckMailVerification start - " + fAuth.getCurrentUser().getEmail());
+            //Log.d("KIMON", "CheckMailVerification start - " + fAuth.getCurrentUser().getEmail());
 
             if (!fAuth.getCurrentUser().isEmailVerified()) {
                 verifyEmailTextView.setVisibility(View.VISIBLE);
@@ -194,7 +205,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                 postCommentLayout.setVisibility(View.VISIBLE);
                 Log.d("KIMON", "CheckMailVerification: verified - " + fAuth.getCurrentUser().getEmail());
             }
-            Log.d("KIMON", "CheckMailVerification end - " + fAuth.getCurrentUser().getEmail());
+            //Log.d("KIMON", "CheckMailVerification end - " + fAuth.getCurrentUser().getEmail());
         }
 //        else{
 //            verifyEmailTextView.setVisibility(View.VISIBLE);
@@ -212,7 +223,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                 TextView welcomeTextView = findViewById(R.id.welcomeTextView);
                 welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail() + "!");
             }
-            swipeRefreshLayout.setRefreshing(false);
+            //swipeRefreshLayout.setRefreshing(false);
         });
     }
 
@@ -229,7 +240,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                     //String responseMessage = response.message();
                     messages = response.body();
                     //Log.d("KIMON", messages.get(1).getUser());
-                    populateRecyclerView(messages);
+                    PopulateRecyclerView(messages);
                     Toolbar toolbar = findViewById(R.id.toolbar);
                     toolbar.setTitle("All messages (" + messages.size() + ")");
                 } else {
@@ -243,54 +254,54 @@ public class AllMessagesActivity extends AppCompatActivity {
             public void onFailure(Call<List<Message>> call, Throwable t) {
                 swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.d("KIMON", t.getMessage());
             }
         });
     }
 
     public void PostMessage() {
-        EditText newMessageEditText = findViewById(R.id.newMessageEditText);
-        if (newMessageEditText.getText().toString().trim().length() != 0) {
-            swipeRefreshLayout.setRefreshing(true);
+        if (fAuth.getCurrentUser() != null) {
+            EditText newMessageEditText = findViewById(R.id.newMessageEditText);
+            if (newMessageEditText.getText().toString().trim().length() != 0) {
+                swipeRefreshLayout.setRefreshing(true);
 
-            String newMessageContent = newMessageEditText.getText().toString().trim().replaceAll(" +", " ");
-            String newMessageUser = fAuth.getCurrentUser().getEmail();
-            Message newMessage = new Message();
-            newMessage.setContent(newMessageContent);
-            newMessage.setUser(newMessageUser);
+                String newMessageContent = newMessageEditText.getText().toString().trim().replaceAll(" +", " ");
 
-            TwisterPMService service = ApiUtils.getTwisterPMService();
+                String newMessageUser = fAuth.getCurrentUser().getEmail();
+                Message newMessage = new Message();
+                newMessage.setContent(newMessageContent);
+                newMessage.setUser(newMessageUser);
 
-            Call<Message> messageCall = service.postMessage(newMessage);
-            messageCall.enqueue(new Callback<Message>() {
-                @Override
-                public void onResponse(Call<Message> call, Response<Message> response) {
-                    swipeRefreshLayout.setRefreshing(false);
-                    if (response.isSuccessful()) {
-                        newMessageEditText.setText("");
-                        newMessageEditText.clearFocus();
-                        Toast.makeText(getApplicationContext(), "Message successfully posted", Toast.LENGTH_LONG).show();
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                TwisterPMService service = ApiUtils.getTwisterPMService();
+
+                Call<Message> messageCall = service.postMessage(newMessage);
+                messageCall.enqueue(new Callback<Message>() {
+                    @Override
+                    public void onResponse(Call<Message> call, Response<Message> response) {
+                        swipeRefreshLayout.setRefreshing(false);
+                        if (response.isSuccessful()) {
+                            newMessageEditText.setText("");
+                            newMessageEditText.clearFocus();
+                            Toast.makeText(getApplicationContext(), "Message successfully posted", Toast.LENGTH_LONG).show();
+                            GetMessages();
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
+                            String errorMessage = "Problem " + response.code() + " " + response.message();
+                            Log.d("KIMON", errorMessage);
                         }
-                        GetMessages();
 
-                    } else {
-                        Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
-                        String errorMessage = "Problem " + response.code() + " " + response.message();
-                        Log.d("KIMON", errorMessage);
                     }
-                }
 
-                @Override
-                public void onFailure(Call<Message> call, Throwable t) {
-                    swipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            Toast.makeText(getApplicationContext(), "Message must contain non-space characters", Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onFailure(Call<Message> call, Throwable t) {
+                        swipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                Toast.makeText(getApplicationContext(), "Message must contain non-space characters", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -366,12 +377,13 @@ public class AllMessagesActivity extends AppCompatActivity {
         });
     }
 
-    private void populateRecyclerView(List<Message> messages) {
+    private void PopulateRecyclerView(List<Message> messages) {
         RecyclerView recyclerView = findViewById(R.id.messagesRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerViewMessageAdapter(this, messages);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
+        //recyclerView.scheduleLayoutAnimation();
         adapter.setClickListener((view, position, item) -> {
             //Message message = (Message) item;
             Log.d("KIMON", item.toString());
@@ -393,8 +405,9 @@ public class AllMessagesActivity extends AppCompatActivity {
         });
 
         adapter.setRVButtonClickListener((view, position, item) -> {
-                    Log.d("KIMON", "Overflow button click on message: " + item.toString());
-            PopupMenu popup = new PopupMenu(getApplicationContext(), view);
+            Log.d("KIMON", "Overflow button click on message: " + item.toString());
+            Context wrapper = new ContextThemeWrapper(getApplicationContext(), R.style.PopupMenuTheme);
+            PopupMenu popup = new PopupMenu(wrapper, view);
             MenuInflater inflater = popup.getMenuInflater();
             inflater.inflate(R.menu.menu_overflow, popup.getMenu());
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

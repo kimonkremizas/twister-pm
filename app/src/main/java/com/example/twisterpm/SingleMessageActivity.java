@@ -80,7 +80,9 @@ public class SingleMessageActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.action_allMessages:
-                startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 break;
         }
@@ -150,18 +152,36 @@ public class SingleMessageActivity extends AppCompatActivity {
         Log.d("KIMON", "Intent: " + singleMessage.toString());
         messageUserTextView.setText(singleMessage.getUser());
 
-        switch (singleMessage.getUser()) {
-            case "kimon":
-                messageUserImageView.setImageResource(R.drawable.photo1);
-                break;
-            case "rania@hotmail.com":
-                messageUserImageView.setImageResource(R.drawable.rania);
-                break;
-            case "anbo":
-                messageUserImageView.setImageResource(R.drawable.anbo);
-                break;
-            default:
-                messageUserImageView.setImageResource(R.drawable.philip);
+        if (singleMessage.getUser().contains("kremizas") || singleMessage.getUser().contains("kimon")) {
+            messageUserImageView.setImageResource(R.drawable.a005man);
+        } else if (singleMessage.getUser().contains("dominik")) {
+            messageUserImageView.setImageResource(R.drawable.a002man);
+        } else if (singleMessage.getUser().contains("anbo") || singleMessage.getUser().contains("anders")) {
+            messageUserImageView.setImageResource(R.drawable.a013man);
+        } else if (singleMessage.getUser().contains("katerina")) {
+            messageUserImageView.setImageResource(R.drawable.a003woman);
+        } else if (singleMessage.getUser().contains("rania")) {
+            messageUserImageView.setImageResource(R.drawable.a004woman);
+        } else if (singleMessage.getUser().contains("ani")) {
+            messageUserImageView.setImageResource(R.drawable.a001woman);
+        } else if (singleMessage.getUser().contains("uks")) {
+            messageUserImageView.setImageResource(R.drawable.a006woman);
+        } else if (singleMessage.getUser().contains("nicolai")) {
+            messageUserImageView.setImageResource(R.drawable.a011man);
+        } else if (singleMessage.getUser().contains("o")) {
+            messageUserImageView.setImageResource(R.drawable.a007woman);
+        } else if (singleMessage.getUser().contains("y")) {
+            messageUserImageView.setImageResource(R.drawable.a008woman);
+        } else if (singleMessage.getUser().contains("t")) {
+            messageUserImageView.setImageResource(R.drawable.a009woman);
+        } else if (singleMessage.getUser().contains("s")) {
+            messageUserImageView.setImageResource(R.drawable.a010woman);
+        } else if (singleMessage.getUser().contains("z")) {
+            messageUserImageView.setImageResource(R.drawable.a012woman);
+        } else if (singleMessage.getUser().contains("m")) {
+            messageUserImageView.setImageResource(R.drawable.a014man);
+        } else {
+            messageUserImageView.setImageResource(R.drawable.a015woman);
         }
 
         messageContentTextView.setText(singleMessage.getContent());
@@ -211,31 +231,32 @@ public class SingleMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 View postCommentView = layoutInflater.inflate(R.layout.post_comment_popup, null);
-
-                postCommentAlert.setTitle("Post Comment")
-                        //.setMessage("Enter your comment below:")
-                        .setPositiveButton("Post", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                EditText postCommentEditText = postCommentView.findViewById(R.id.postCommentEditText);
-                                //postCommentEditText.requestFocus();
-                                if (postCommentEditText.getText().toString().trim().equals("")) {
-                                    Log.d("KIMON", "Empty comment found!");
-                                    postCommentEditText.setError("Required field");
-                                } else {
-                                    Log.d("KIMON", "Empty comment not found!");
-                                    String newCommentContent = postCommentEditText.getText().toString().trim().replaceAll(" +", " ");
-                                    String newCommentUser = fAuth.getCurrentUser().getEmail();
-                                    Comment newComment = new Comment();
-                                    newComment.setContent(newCommentContent);
-                                    newComment.setUser(newCommentUser);
-                                    newComment.setMessageId(singleMessage.getId());
-                                    PostComment(singleMessage.getId(), newComment);
+                if (fAuth.getCurrentUser() != null) {
+                    postCommentAlert.setTitle("Post Comment")
+                            //.setMessage("Enter your comment below:")
+                            .setPositiveButton("Post", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    EditText postCommentEditText = postCommentView.findViewById(R.id.postCommentEditText);
+                                    //postCommentEditText.requestFocus();
+                                    if (postCommentEditText.getText().toString().trim().equals("")) {
+                                        Log.d("KIMON", "Empty comment found!");
+                                        postCommentEditText.setError("Required field");
+                                    } else {
+                                        Log.d("KIMON", "Empty comment not found!");
+                                        String newCommentContent = postCommentEditText.getText().toString().trim().replaceAll(" +", " ");
+                                        String newCommentUser = fAuth.getCurrentUser().getEmail();
+                                        Comment newComment = new Comment();
+                                        newComment.setContent(newCommentContent);
+                                        newComment.setUser(newCommentUser);
+                                        newComment.setMessageId(singleMessage.getId());
+                                        PostComment(singleMessage.getId(), newComment);
+                                    }
                                 }
-                            }
-                        }).setNegativeButton("Cancel", null)
-                        .setView(postCommentView)
-                        .create().show();
+                            }).setNegativeButton("Cancel", null)
+                            .setView(postCommentView)
+                            .create().show();
+                }
             }
         });
 
@@ -360,11 +381,6 @@ public class SingleMessageActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful()) {
                     Toast.makeText(getApplicationContext(), "Comment successfully posted", Toast.LENGTH_LONG).show();
-//                    try {
-//                        Thread.sleep(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
                     GetComments();
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();

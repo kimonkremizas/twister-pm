@@ -19,19 +19,4 @@
         android:orderInCategory="100"
         android:title="All"
         app:showAsAction="ifRoom" />
-<!--    <item-->
-<!--        android:id="@+id/action_myMessages"-->
-<!--        android:orderInCategory="100"-->
-<!--        android:icon="@drawable/account"-->
-<!--        android:title="Mine"-->
-<!--        app:showAsAction="always" />-->
-
-
-
-
-<!--    <item-->
-<!--        android:id="@+id/action_mymessages"-->
-<!--        android:orderInCategory="100"-->
-<!--        android:title="@string/action_mymessages"-->
-<!--        app:showAsAction="ifRoom" />-->
 </menu>

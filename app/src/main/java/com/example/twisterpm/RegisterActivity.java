@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -28,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextView mGoToLoginTextView;
     FirebaseAuth fAuth;
     ProgressBar progressBar;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
         mGoToLoginTextView = findViewById(R.id.goToLoginTextView);
 
         fAuth = FirebaseAuth.getInstance();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         progressBar = findViewById(R.id.progressBar);
 
         if (fAuth.getCurrentUser() != null) {
@@ -86,6 +89,9 @@ public class RegisterActivity extends AppCompatActivity {
                 fAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.METHOD, "email");
+                        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SIGN_UP, bundle);
                         Toast.makeText(RegisterActivity.this, "Account created", Toast.LENGTH_LONG).show();
                         startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
                         finish();

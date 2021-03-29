@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     AlertDialog.Builder resetAlert;
     LayoutInflater inflater;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +43,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         Log.d("KIMON", "Login Activity: onCreate");
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        fAuth = FirebaseAuth.getInstance();
+
         mEmail = findViewById(R.id.loginEmail);
         mPassword = findViewById(R.id.loginPassword);
         progressBar = findViewById(R.id.progressBar);
-
-        fAuth = FirebaseAuth.getInstance();
-
         resetAlert = new AlertDialog.Builder(this);
         inflater = this.getLayoutInflater();
-
         loginButton = findViewById(R.id.loginButton);
         guestButton = findViewById(R.id.guestButton);
         forgotPasswordTextView = findViewById(R.id.forgotPasswordTextView);
@@ -83,9 +84,12 @@ public class LoginActivity extends AppCompatActivity {
                 fAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString(FirebaseAnalytics.Param.METHOD, "email");
+                        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
                         Toast.makeText(LoginActivity.this, "Successfully logged in", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
                         //finish();
@@ -146,7 +150,9 @@ public class LoginActivity extends AppCompatActivity {
         guestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), AllMessagesActivity.class));
+                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
             }
         });
