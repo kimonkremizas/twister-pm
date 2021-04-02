@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.TwisterPM"
+    android:theme="@style/ThemeTwisterPM"
     tools:context=".RegisterActivity">
 
     <TextView
@@ -82,7 +82,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:theme="@style/Theme.TwisterPM"
+        android:theme="@style/ThemeTwisterPM"
         android:text="Register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -83,6 +84,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Settings");
+        toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         Log.d("KIMON", "Settings Activity: onCreate");
         newPassword = findViewById(R.id.newPasswordEditText);

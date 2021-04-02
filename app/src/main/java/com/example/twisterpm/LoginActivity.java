@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         mEmail = findViewById(R.id.loginEmail);
         mPassword = findViewById(R.id.loginPassword);
         progressBar = findViewById(R.id.progressBar);
+//        resetAlert = new AlertDialog.Builder(this,R.style.ThemeTwisterPM);
         resetAlert = new AlertDialog.Builder(this);
         inflater = this.getLayoutInflater();
         loginButton = findViewById(R.id.loginButton);
@@ -110,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
                 View view = inflater.inflate(R.layout.reset_popup, null);
 
                 resetAlert.setTitle("Reset Password?")
-                        .setMessage("Enter your e-mail to receive password reset link")
                         .setPositiveButton("Reset", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -16,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,7 +28,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -120,6 +121,7 @@ public class AllMessagesActivity extends AppCompatActivity {
         postCommentLayout = findViewById(R.id.postCommentLayout);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("All messages");
+        toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         deleteMessageAlert = new AlertDialog.Builder(this);
 
@@ -279,6 +281,8 @@ public class AllMessagesActivity extends AppCompatActivity {
         });
     }
 
+
+
     public void PostMessage() {
         if (fAuth.getCurrentUser() != null) {
             EditText newMessageEditText = findViewById(R.id.newMessageEditText);
@@ -426,8 +430,8 @@ public class AllMessagesActivity extends AppCompatActivity {
 
         adapter.setRVButtonClickListener((view, position, item) -> {
             Log.d("KIMON", "Overflow button click on message: " + item.toString());
-            Context wrapper = new ContextThemeWrapper(getApplicationContext(), R.style.PopupMenuTheme);
-            PopupMenu popup = new PopupMenu(wrapper, view);
+            Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuTheme);
+            androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(wrapper, view);
             MenuInflater inflater = popup.getMenuInflater();
             inflater.inflate(R.menu.menu_overflow, popup.getMenu());
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

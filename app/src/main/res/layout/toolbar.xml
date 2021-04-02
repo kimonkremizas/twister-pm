@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:elevation="4dp"
-    android:theme="@style/Theme.TwisterPM"
-    app:popupTheme="@style/Theme.TwisterPM">
+    android:theme="@style/ToolbarStyle"
+    android:background="@color/toolbarColor"
+    app:popupTheme="@style/ThemeTwisterPM">
 
 </androidx.appcompat.widget.Toolbar>

@@ -3,14 +3,18 @@ package com.example.twisterpm;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +25,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -131,6 +134,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_single_message);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Single message");
+        toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
         Log.d("KIMON", "SingleMessage Activity: onCreate");
@@ -206,7 +210,11 @@ public class SingleMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("KIMON", "SingleMessage Activity: showOverflowPopup");
-                PopupMenu popup = new PopupMenu(getApplicationContext(), v);
+//                PopupMenu popup = new PopupMenu(getApplicationContext(), v);
+//                MenuInflater inflater = popup.getMenuInflater();
+//                inflater.inflate(R.menu.menu_overflow, popup.getMenu());
+                Context wrapper = new ContextThemeWrapper(v.getContext(), R.style.PopupMenuTheme);
+                PopupMenu popup = new androidx.appcompat.widget.PopupMenu(wrapper, v);
                 MenuInflater inflater = popup.getMenuInflater();
                 inflater.inflate(R.menu.menu_overflow, popup.getMenu());
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -282,7 +290,10 @@ public class SingleMessageActivity extends AppCompatActivity {
 
     private void populateRecyclerView(List<Comment> comments) {
         RecyclerView recyclerView = findViewById(R.id.commentsRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new RecyclerViewCommentAdapter(this, comments);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
@@ -308,10 +319,12 @@ public class SingleMessageActivity extends AppCompatActivity {
 
         adapter.setRVButtonClickListener((view, position, item) -> {
             Log.d("KIMON", "Overflow button click on message: " + item.toString());
-            PopupMenu popup = new PopupMenu(getApplicationContext(), view);
+            //PopupMenu popup = new PopupMenu(getApplicationContext(), view);
+            Context wrapper = new ContextThemeWrapper(this, R.style.PopupMenuTheme);
+            androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(wrapper, view);
             MenuInflater inflater = popup.getMenuInflater();
             inflater.inflate(R.menu.menu_overflow, popup.getMenu());
-            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            popup.setOnMenuItemClickListener(new androidx.appcompat.widget.PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
                     switch (item.getItemId()) {

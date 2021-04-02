@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/twister_icon_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TwisterPM">
+        android:theme="@style/ThemeTwisterPM">
         <activity android:name=".AllMessagesActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan">
@@ -22,13 +22,13 @@
         </activity>
         <activity android:name=".SingleMessageActivity" />
         <activity android:name=".SettingsActivity"
-            android:theme="@style/Theme.TwisterPM.login"/>
+            />
         <activity android:name=".LoginActivity"
-            android:theme="@style/Theme.TwisterPM.login"
+
             android:noHistory="true">
         </activity>
         <activity android:name=".RegisterActivity"
-            android:theme="@style/Theme.TwisterPM.login">
+            >
         </activity>
     </application>
 

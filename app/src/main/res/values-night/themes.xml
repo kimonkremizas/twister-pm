@@ -1,10 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TwisterPM" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="ThemeTwisterPM" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/mint_green_dark</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
@@ -12,13 +12,13 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/mint_green_superduperdark</item>
         <!-- Customize your theme here. -->
-        <item name="popupMenuBackground">@color/mint_green_superdark</item>
+<!--        <item name="popupMenuBackground">@color/mint_green_superdark</item>-->
 
     </style>
 
     <style name="Theme.TwisterPM.login" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/mint_green_dark</item>
+        <item name="colorPrimary">@color/toolbarColor</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
 <!--        <item name="android:colorBackground">@color/mint_green_superdark</item>-->
@@ -29,12 +29,18 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/mint_green_superduperdark</item>
         <!-- Customize your theme here. -->
-        <item name="popupMenuBackground">@color/mint_green_superdark</item>
+        <item name="android:alertDialogStyle">@color/white</item>
     </style>
 
-    <style name="PopupMenuTheme" parent="android:Widget.PopupMenu">
-        <item name="android:colorBackground">@color/mint_green_superdark</item>
+    <style name="PopupMenuTheme" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:colorBackground">@color/black</item>
+<!--        <item name="android:background">@color/black</item>-->
         <item name="android:colorForeground">@color/white</item>
     </style>
+
+<!--    <style name="AlertDialogTheme" parent="Theme.AppCompat.DayNight.Dialog">-->
+<!--        <item name="colorAccent">@color/white</item>-->
+
+<!--    </style>-->
 
 </resources>
