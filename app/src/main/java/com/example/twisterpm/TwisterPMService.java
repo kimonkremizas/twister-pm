@@ -25,6 +25,9 @@ public interface TwisterPMService {
     @GET("messages/{messageId}/comments")
     Call<List<Comment>> getMessageComments(@Path("messageId") int messageId);
 
+    @GET("messages/{messageId}/comments")
+    Call<List<Comment>> getCommentsByUser(@Path("messageId") int messageId,@Query("user") String user);
+
     @POST("messages")
     Call<Message> postMessage(@Body Message message);
 

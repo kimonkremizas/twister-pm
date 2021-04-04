@@ -123,7 +123,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/messagesRecyclerView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layoutAnimation="@anim/layout_animation"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -150,6 +150,7 @@
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:visibility="gone"
+        app:backgroundTint="@color/buttonColor"
         app:fabSize="mini"
         app:srcCompat="@drawable/ic_baseline_keyboard_arrow_up_24" />
 </RelativeLayout>

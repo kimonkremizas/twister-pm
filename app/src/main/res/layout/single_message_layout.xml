@@ -82,7 +82,7 @@
                 android:layout_toLeftOf="@id/messageCommentsNoTextView"
                 android:background="?android:attr/selectableItemBackground"
                 android:src="@drawable/reply"
-                android:tint="@color/postCommentButtonColor"
+                android:tint="@color/buttonColor"
                 android:visibility="gone" />
 
 

@@ -112,11 +112,6 @@ public class AllMessagesActivity extends AppCompatActivity {
                                     Log.d("KIMON", "Empty comment not found!");
                                     String selectedUser = filterEditText.getText().toString().trim().replaceAll(" +", " ");
                                     GetMessagesByUser(selectedUser);
-
-//                                    Intent intent2 = new Intent(getApplicationContext(), AllMessagesActivity.class);
-//                                    intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                                    startActivity(intent2);
-//                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                                 }
                             }
                         })

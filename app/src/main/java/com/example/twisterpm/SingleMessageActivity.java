@@ -56,7 +56,7 @@ public class SingleMessageActivity extends AppCompatActivity {
     RecyclerViewCommentAdapter adapter;
     LayoutInflater layoutInflater;
     MenuInflater menuInflater;
-    AlertDialog.Builder postCommentAlert, deleteMessageAlert, deleteCommentAlert;
+    AlertDialog.Builder postCommentAlert, deleteMessageAlert, deleteCommentAlert, filterAlert;
     FirebaseAuth fAuth;
     int singleMessageCommentsNo;
 
@@ -88,6 +88,34 @@ public class SingleMessageActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
+                break;
+            case R.id.action_filter:
+                View filterView = layoutInflater.inflate(R.layout.filter_popup, null);
+                filterAlert = new AlertDialog.Builder(this);
+                filterAlert.setTitle("Select user")
+                        .setPositiveButton("Set User", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText filterEditText = filterView.findViewById(R.id.filterEditText);
+                                //postCommentEditText.requestFocus();
+                                if (filterEditText.getText().toString().trim().equals("")) {
+                                    Log.d("KIMON", "Empty comment found!");
+                                    filterEditText.setError("Required field");
+                                } else {
+                                    Log.d("KIMON", "Empty comment not found!");
+                                    String selectedUser = filterEditText.getText().toString().trim().replaceAll(" +", " ");
+                                    GetCommentsByUser(selectedUser);
+                                }
+                            }
+                        })
+                        .setNeutralButton("Reset", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                GetComments();
+                            }
+                        })
+                        .setView(filterView)
+                        .create().show();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -216,39 +244,6 @@ public class SingleMessageActivity extends AppCompatActivity {
             }
         });
 
-//        postCommentButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                View postCommentView = layoutInflater.inflate(R.layout.post_comment_popup, null);
-//                if (fAuth.getCurrentUser() != null) {
-//                    postCommentAlert.setTitle("Post Comment")
-//                            //.setMessage("Enter your comment below:")
-//                            .setPositiveButton("Post", new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    EditText postCommentEditText = postCommentView.findViewById(R.id.postCommentEditText);
-//                                    //postCommentEditText.requestFocus();
-//                                    if (postCommentEditText.getText().toString().trim().equals("")) {
-//                                        Log.d("KIMON", "Empty comment found!");
-//                                        postCommentEditText.setError("Required field");
-//                                    } else {
-//                                        Log.d("KIMON", "Empty comment not found!");
-//                                        String newCommentContent = postCommentEditText.getText().toString().trim().replaceAll(" +", " ");
-//                                        String newCommentUser = fAuth.getCurrentUser().getEmail();
-//                                        Comment newComment = new Comment();
-//                                        newComment.setContent(newCommentContent);
-//                                        newComment.setUser(newCommentUser);
-//                                        newComment.setMessageId(singleMessage.getId());
-//                                        PostComment(singleMessage.getId(), newComment);
-//                                    }
-//                                }
-//                            }).setNegativeButton("Cancel", null)
-//                            .setView(postCommentView)
-//                            .create().show();
-//                }
-//            }
-//        });
-
         CheckIfPostButtonShouldBeEnabled();
         postCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -315,7 +310,7 @@ public class SingleMessageActivity extends AppCompatActivity {
         });
     }
 
-    private void populateRecyclerView(List<Comment> comments) {
+    private void PopulateRecyclerView(List<Comment> comments) {
         RecyclerView recyclerView = findViewById(R.id.commentsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerViewCommentAdapter(this, comments);
@@ -382,7 +377,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                     String responseMessage = response.message();
                     List<Comment> comments = response.body();
                     //Log.d("KIMON", comments.get(12).getContent());
-                    populateRecyclerView(comments);
+                    PopulateRecyclerView(comments);
                     //messageCommentsNoTextView = findViewById(R.id.messageCommentsNoTextView);
                     singleMessageCommentsNo = comments.size();
                     if (singleMessageCommentsNo == 1) {
@@ -405,6 +400,38 @@ public class SingleMessageActivity extends AppCompatActivity {
         });
     }
 
+    public void GetCommentsByUser(String selectedUser) {
+        swipeRefreshLayout.setRefreshing(true);
+
+        TwisterPMService service = ApiUtils.getTwisterPMService();
+        Call<List<Comment>> commentCall = service.getCommentsByUser(singleMessage.getId(),selectedUser);
+        commentCall.enqueue(new Callback<List<Comment>>() {
+            @Override
+            public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
+                swipeRefreshLayout.setRefreshing(false);
+                if (response.isSuccessful()) {
+                    List<Comment> comments = response.body();
+                    comments = response.body();
+                    //Log.d("KIMON", messages.get(1).getUser());
+                    Log.d("KIMON",comments.toString());
+                    PopulateRecyclerView(comments);
+                    Toolbar toolbar = findViewById(R.id.toolbar);
+                    //toolbar.setTitle("All messages (" + messages.size() + ")");
+                } else {
+                    Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
+                    String errorMessage = "Problem " + response.code() + " " + response.message();
+                    Log.d("KIMON", errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Comment>> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.d("KIMON", t.getMessage());
+            }
+        });
+    }
 
     public void PostComment(int messsageId, Comment newComment) {
 
