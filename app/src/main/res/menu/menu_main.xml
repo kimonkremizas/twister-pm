@@ -14,9 +14,10 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_allMessages"
-        android:icon="@drawable/ic_baseline_message_24"
+        android:id="@+id/action_filter"
+        android:icon="@drawable/ic_baseline_filter_list_24"
         android:orderInCategory="100"
-        android:title="All"
+        android:title="Filter"
         app:showAsAction="ifRoom" />
+
 </menu>

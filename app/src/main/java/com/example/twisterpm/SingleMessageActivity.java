@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,10 +44,10 @@ import retrofit2.Response;
 
 public class SingleMessageActivity extends AppCompatActivity {
     Message singleMessage;
-    //Comment selectedComment;
     TextView messageUserTextView, messageContentTextView, messageCommentsNoTextView;
-    ImageButton messageOverflowButton, postCommentButton;
+    ImageButton messageOverflowButton, postCommentButton, homeButton;
     ImageView messageUserImageView;
+    ConstraintLayout postCommentLayout;
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerViewCommentAdapter adapter;
     LayoutInflater layoutInflater;
@@ -82,50 +85,11 @@ public class SingleMessageActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
-            case R.id.action_allMessages:
-                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void ShowDeleteMessageAlert() {
-        deleteMessageAlert.setTitle("Delete Message")
-                .setMessage("Are you sure you want to delete this message?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DeleteMessage(singleMessage);
-                    }
-                }).setNegativeButton("No", null)
-                //.setView(deleteMessageView)
-                .create().show();
-    }
 
-    public void ShowDeleteCommentAlert(int position) {
-        deleteMessageAlert.setTitle("Delete Message")
-                .setMessage("Are you sure you want to delete this message?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DeleteComment(position);
-                    }
-                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                GetComments();
-            }
-        }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                GetComments();
-            }
-        })
-                .create().show();
-    }
 
 
     @Override
@@ -133,8 +97,8 @@ public class SingleMessageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_message);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Single message");
-        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setTitle("");
+        //toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
         Log.d("KIMON", "SingleMessage Activity: onCreate");
@@ -143,7 +107,9 @@ public class SingleMessageActivity extends AppCompatActivity {
         messageContentTextView = findViewById(R.id.messageContentTextView);
         messageCommentsNoTextView = findViewById(R.id.messageCommentsNoTextView);
         messageOverflowButton = findViewById(R.id.messageOverflowButton);
-        postCommentButton = findViewById(R.id.postCommentButton);
+        postCommentButton = findViewById(R.id.postCommentButton2);
+        homeButton = findViewById(R.id.homeButton);
+        postCommentLayout = findViewById(R.id.postCommentLayout);
 
         layoutInflater = this.getLayoutInflater();
         menuInflater = this.getMenuInflater();
@@ -201,7 +167,7 @@ public class SingleMessageActivity extends AppCompatActivity {
                 messageOverflowButton.setVisibility(View.VISIBLE);
             }
             if (fAuth.getCurrentUser().isEmailVerified()) {
-                postCommentButton.setVisibility(View.VISIBLE);
+                postCommentLayout.setVisibility(View.VISIBLE);
             }
         }
 
@@ -235,38 +201,70 @@ public class SingleMessageActivity extends AppCompatActivity {
             }
         });
 
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }
+        });
+
+//        postCommentButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                View postCommentView = layoutInflater.inflate(R.layout.post_comment_popup, null);
+//                if (fAuth.getCurrentUser() != null) {
+//                    postCommentAlert.setTitle("Post Comment")
+//                            //.setMessage("Enter your comment below:")
+//                            .setPositiveButton("Post", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    EditText postCommentEditText = postCommentView.findViewById(R.id.postCommentEditText);
+//                                    //postCommentEditText.requestFocus();
+//                                    if (postCommentEditText.getText().toString().trim().equals("")) {
+//                                        Log.d("KIMON", "Empty comment found!");
+//                                        postCommentEditText.setError("Required field");
+//                                    } else {
+//                                        Log.d("KIMON", "Empty comment not found!");
+//                                        String newCommentContent = postCommentEditText.getText().toString().trim().replaceAll(" +", " ");
+//                                        String newCommentUser = fAuth.getCurrentUser().getEmail();
+//                                        Comment newComment = new Comment();
+//                                        newComment.setContent(newCommentContent);
+//                                        newComment.setUser(newCommentUser);
+//                                        newComment.setMessageId(singleMessage.getId());
+//                                        PostComment(singleMessage.getId(), newComment);
+//                                    }
+//                                }
+//                            }).setNegativeButton("Cancel", null)
+//                            .setView(postCommentView)
+//                            .create().show();
+//                }
+//            }
+//        });
+
+        CheckIfPostButtonShouldBeEnabled();
         postCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View postCommentView = layoutInflater.inflate(R.layout.post_comment_popup, null);
-                if (fAuth.getCurrentUser() != null) {
-                    postCommentAlert.setTitle("Post Comment")
-                            //.setMessage("Enter your comment below:")
-                            .setPositiveButton("Post", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    EditText postCommentEditText = postCommentView.findViewById(R.id.postCommentEditText);
-                                    //postCommentEditText.requestFocus();
-                                    if (postCommentEditText.getText().toString().trim().equals("")) {
-                                        Log.d("KIMON", "Empty comment found!");
-                                        postCommentEditText.setError("Required field");
-                                    } else {
-                                        Log.d("KIMON", "Empty comment not found!");
-                                        String newCommentContent = postCommentEditText.getText().toString().trim().replaceAll(" +", " ");
-                                        String newCommentUser = fAuth.getCurrentUser().getEmail();
-                                        Comment newComment = new Comment();
-                                        newComment.setContent(newCommentContent);
-                                        newComment.setUser(newCommentUser);
-                                        newComment.setMessageId(singleMessage.getId());
-                                        PostComment(singleMessage.getId(), newComment);
-                                    }
-                                }
-                            }).setNegativeButton("Cancel", null)
-                            .setView(postCommentView)
-                            .create().show();
+                EditText postCommentEditText = findViewById(R.id.postCommentEditText2);
+                if (postCommentEditText.getText().toString().trim().equals("")) {
+                    Log.d("KIMON", "Empty comment found!");
+                    postCommentEditText.setError("Required field");
+                } else {
+                    Log.d("KIMON", "Empty comment not found!");
+                    String newCommentContent = postCommentEditText.getText().toString().trim().replaceAll(" +", " ");
+                    String newCommentUser = fAuth.getCurrentUser().getEmail();
+                    Comment newComment = new Comment();
+                    newComment.setContent(newCommentContent);
+                    newComment.setUser(newCommentUser);
+                    newComment.setMessageId(singleMessage.getId());
+                    PostComment(singleMessage.getId(), newComment);
                 }
             }
         });
+
 
         SwipeRefresh();
         GetComments();
@@ -290,10 +288,7 @@ public class SingleMessageActivity extends AppCompatActivity {
 
     private void populateRecyclerView(List<Comment> comments) {
         RecyclerView recyclerView = findViewById(R.id.commentsRecyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerViewCommentAdapter(this, comments);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
@@ -386,13 +381,15 @@ public class SingleMessageActivity extends AppCompatActivity {
 
         swipeRefreshLayout.setRefreshing(true);
         TwisterPMService service = ApiUtils.getTwisterPMService();
-
+        EditText postCommentEditText = findViewById(R.id.postCommentEditText2);
         Call<Comment> commentCall = service.postComment(messsageId, newComment);
         commentCall.enqueue(new Callback<Comment>() {
             @Override
             public void onResponse(Call<Comment> call, Response<Comment> response) {
                 swipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful()) {
+                    postCommentEditText.setText("");
+                    postCommentEditText.clearFocus();
                     Toast.makeText(getApplicationContext(), "Comment successfully posted", Toast.LENGTH_LONG).show();
                     GetComments();
                 } else {
@@ -493,15 +490,72 @@ public class SingleMessageActivity extends AppCompatActivity {
                 }
             };
 
+    public void ShowDeleteMessageAlert() {
+        deleteMessageAlert.setTitle("Delete Message")
+                .setMessage("Are you sure you want to delete this message?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DeleteMessage(singleMessage);
+                    }
+                }).setNegativeButton("No", null)
+                //.setView(deleteMessageView)
+                .create().show();
+    }
+
+    public void ShowDeleteCommentAlert(int position) {
+        deleteMessageAlert.setTitle("Delete Message")
+                .setMessage("Are you sure you want to delete this message?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DeleteComment(position);
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                GetComments();
+            }
+        }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                GetComments();
+            }
+        })
+                .create().show();
+    }
+
+    private void CheckIfPostButtonShouldBeEnabled() {
+        Log.d("KIMON", "CheckIfPostButtonShouldBeEnabled");
+        EditText postCommentEditText = findViewById(R.id.postCommentEditText2);
+        if (postCommentEditText.length() == 0) postCommentButton.setEnabled(false);
+        postCommentEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                boolean isReady = postCommentEditText.getText().toString().trim().length() > 0;
+                postCommentButton.setEnabled(isReady);
+                Log.d("KIMON", "onTextChanged");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
     public void CheckMailVerification() {
         fAuth = FirebaseAuth.getInstance();
         messageOverflowButton = findViewById(R.id.messageOverflowButton);
-        postCommentButton = findViewById(R.id.postCommentButton);
+        postCommentLayout = findViewById(R.id.postCommentLayout);
         if (fAuth.getCurrentUser() != null) {
             Log.d("KIMON", "CheckMailVerification start - " + fAuth.getCurrentUser().getEmail());
             if (!fAuth.getCurrentUser().isEmailVerified()) {
                 messageOverflowButton.setVisibility(View.GONE);
-                postCommentButton.setVisibility(View.GONE);
+                postCommentLayout.setVisibility(View.GONE);
                 Log.d("KIMON", "CheckMailVerification: not verified - " + fAuth.getCurrentUser().getEmail());
             } else {
                 Log.d("KIMON", "CheckMailVerification: verified - " + fAuth.getCurrentUser().getEmail());

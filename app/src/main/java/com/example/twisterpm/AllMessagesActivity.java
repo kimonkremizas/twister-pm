@@ -22,12 +22,14 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +39,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -51,13 +52,14 @@ import static com.example.twisterpm.ApiUtils.MY_PREFS;
 public class AllMessagesActivity extends AppCompatActivity {
     TextView verifyEmailTextView, welcomeTextView;
     Button verifyEmailButton, postNewMessageButton;
-    //ImageView messageDeleteIconImage;
-    AlertDialog.Builder deleteMessageAlert;
+    ImageButton homeButton;
+    AlertDialog.Builder deleteMessageAlert, filterAlert;
     FirebaseAuth fAuth;
     private SwipeRefreshLayout swipeRefreshLayout;
     RecyclerViewMessageAdapter adapter;
     List<Message> messages;
-    RelativeLayout postCommentLayout;
+    RelativeLayout postMessageLayout;
+    LayoutInflater layoutInflater;
 
     //ImageButton messageOverflowButton;
     @Override
@@ -92,10 +94,31 @@ public class AllMessagesActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
-            case R.id.action_allMessages:
-                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+            case R.id.action_filter:
+                View filterView = layoutInflater.inflate(R.layout.filter_popup, null);
+                filterAlert = new AlertDialog.Builder(this);
+                filterAlert.setTitle("Select user")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText filterEditText = filterView.findViewById(R.id.filterEditText);
+                                //postCommentEditText.requestFocus();
+                                if (filterEditText.getText().toString().trim().equals("")) {
+                                    Log.d("KIMON", "Empty comment found!");
+                                    filterEditText.setError("Required field");
+                                } else {
+                                    Log.d("KIMON", "Empty comment not found!");
+                                    String selectedUser = filterEditText.getText().toString().trim().replaceAll(" +", " ");
+                                    GetMessagesByUser(selectedUser);
+                                }
+                            }
+                        }).setNegativeButton("Cancel", null)
+                        .setView(filterView)
+                        .create().show();
+
+                Intent intent2 = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent2);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }
@@ -118,13 +141,14 @@ public class AllMessagesActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_all_messages);
-        postCommentLayout = findViewById(R.id.postCommentLayout);
+        postMessageLayout = findViewById(R.id.postMessageLayout);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("All messages");
-        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setTitle("");
+        //toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
+        homeButton = findViewById(R.id.homeButton);
         deleteMessageAlert = new AlertDialog.Builder(this);
-
+        layoutInflater = this.getLayoutInflater();
 
 
 
@@ -175,6 +199,16 @@ public class AllMessagesActivity extends AppCompatActivity {
             }
         });
 
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            }
+        });
+
 
     }
 
@@ -218,13 +252,13 @@ public class AllMessagesActivity extends AppCompatActivity {
             if (!fAuth.getCurrentUser().isEmailVerified()) {
                 verifyEmailTextView.setVisibility(View.VISIBLE);
                 verifyEmailButton.setVisibility(View.VISIBLE);
-                postCommentLayout.setVisibility(View.GONE);
+                postMessageLayout.setVisibility(View.GONE);
                 Log.d("KIMON", "CheckMailVerification: not verified - " + fAuth.getCurrentUser().getEmail());
             }
             if (fAuth.getCurrentUser().isEmailVerified()) {
                 verifyEmailTextView.setVisibility(View.GONE);
                 verifyEmailButton.setVisibility(View.GONE);
-                postCommentLayout.setVisibility(View.VISIBLE);
+                postMessageLayout.setVisibility(View.VISIBLE);
                 Log.d("KIMON", "CheckMailVerification: verified - " + fAuth.getCurrentUser().getEmail());
             }
             //Log.d("KIMON", "CheckMailVerification end - " + fAuth.getCurrentUser().getEmail());
@@ -264,7 +298,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                     //Log.d("KIMON", messages.get(1).getUser());
                     PopulateRecyclerView(messages);
                     Toolbar toolbar = findViewById(R.id.toolbar);
-                    toolbar.setTitle("All messages (" + messages.size() + ")");
+                    //toolbar.setTitle("All messages (" + messages.size() + ")");
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
                     String errorMessage = "Problem " + response.code() + " " + response.message();
@@ -281,7 +315,38 @@ public class AllMessagesActivity extends AppCompatActivity {
         });
     }
 
+    public void GetMessagesByUser(String selectedUser) {
+        swipeRefreshLayout.setRefreshing(true);
 
+        TwisterPMService service = ApiUtils.getTwisterPMService();
+        Call<List<Message>> messageCall = service.getMessagesByUser(selectedUser);
+        messageCall.enqueue(new Callback<List<Message>>() {
+            @Override
+            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+                swipeRefreshLayout.setRefreshing(false);
+                if (response.isSuccessful()) {
+                    //String responseMessage = response.message();
+                    messages = response.body();
+                    //Log.d("KIMON", messages.get(1).getUser());
+                    Log.d("KIMON",messages.toString());
+//                    PopulateRecyclerView(messages);
+                    Toolbar toolbar = findViewById(R.id.toolbar);
+                    //toolbar.setTitle("All messages (" + messages.size() + ")");
+                } else {
+                    Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
+                    String errorMessage = "Problem " + response.code() + " " + response.message();
+                    Log.d("KIMON", errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Message>> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.d("KIMON", t.getMessage());
+            }
+        });
+    }
 
     public void PostMessage() {
         if (fAuth.getCurrentUser() != null) {

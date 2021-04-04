@@ -19,6 +19,9 @@ public interface TwisterPMService {
     @GET("messages")
     Call<List<Message>> getMessages();
 
+    @GET("messages")
+    Call<List<Message>> getMessagesByUser(@Query("user") String user);
+
     @GET("messages/{messageId}/comments")
     Call<List<Comment>> getMessageComments(@Path("messageId") int messageId);
 

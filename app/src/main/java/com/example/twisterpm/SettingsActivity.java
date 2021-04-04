@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -34,8 +35,8 @@ import static com.example.twisterpm.ApiUtils.MY_PREFS;
 public class SettingsActivity extends AppCompatActivity {
 
     EditText newPassword, newPasswordConfirmation, newEmail;
-    Button updatePasswordButton;
-    Button updateEmailButton;
+    Button updatePasswordButton, updateEmailButton;
+    ImageButton homeButton;
     RadioGroup selectThemeRadioGroup;
     RadioButton lightThemeRadioButton, darkThemeRadioButton;
     FirebaseUser user;
@@ -68,12 +69,6 @@ public class SettingsActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
-            case R.id.action_allMessages:
-                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -83,8 +78,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Settings");
-        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setTitle("");
+        //toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         Log.d("KIMON", "Settings Activity: onCreate");
         newPassword = findViewById(R.id.newPasswordEditText);
@@ -92,6 +87,7 @@ public class SettingsActivity extends AppCompatActivity {
         updatePasswordButton = findViewById(R.id.updatePasswordButton);
         newEmail = findViewById(R.id.newEmailEditText);
         updateEmailButton = findViewById(R.id.updateEmailButton);
+        homeButton = findViewById(R.id.homeButton);
 
         selectThemeRadioGroup = findViewById(R.id.selectThemeRadioGroup);
         lightThemeRadioButton = findViewById(R.id.lightThemeRadioButton);
@@ -186,6 +182,16 @@ public class SettingsActivity extends AppCompatActivity {
                         Toast.makeText(SettingsActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
+            }
+        });
+
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }
         });
     }

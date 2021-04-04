@@ -8,4 +8,21 @@
     android:background="@color/toolbarColor"
     app:popupTheme="@style/ThemeTwisterPM">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+
+        <ImageButton
+            android:id="@+id/homeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:maxHeight="3dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/twistericonround" />
+
+    </RelativeLayout>
 </androidx.appcompat.widget.Toolbar>

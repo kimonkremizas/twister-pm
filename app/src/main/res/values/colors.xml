@@ -15,6 +15,7 @@
     <color name="mint_green_superduperdark">#0B1112</color>
     <color name="transparent">#00000000</color>
     <color name="toolbarColor">#63979F</color>
-    <color name="postCommentButtonColor">#FF000000</color>
+    <color name="postCommentButtonColor">#63979F</color>
+    <color name="postCommentBackgroundColor">#DCDCDC</color>
     <color name="toolbarTextColor">#FFFFFFFF</color>
 </resources>

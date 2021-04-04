@@ -27,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginTitle"
-        app:srcCompat="@drawable/logo" />
+        app:srcCompat="@mipmap/twister_icon_round" />
 
     <EditText
         android:id="@+id/loginEmail"
