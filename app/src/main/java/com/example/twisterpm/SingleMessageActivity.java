@@ -7,6 +7,7 @@ import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 
 import com.example.twisterpm.model.Comment;
 import com.example.twisterpm.model.Message;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
@@ -48,6 +50,8 @@ public class SingleMessageActivity extends AppCompatActivity {
     ImageButton messageOverflowButton, postCommentButton, homeButton;
     ImageView messageUserImageView;
     ConstraintLayout postCommentLayout;
+    NestedScrollView nestedScrollView;
+    FloatingActionButton scrollToTopButton;
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerViewCommentAdapter adapter;
     LayoutInflater layoutInflater;
@@ -110,7 +114,8 @@ public class SingleMessageActivity extends AppCompatActivity {
         postCommentButton = findViewById(R.id.postCommentButton2);
         homeButton = findViewById(R.id.homeButton);
         postCommentLayout = findViewById(R.id.postCommentLayout);
-
+        nestedScrollView = findViewById(R.id.singleMessageScrollView);
+        scrollToTopButton = findViewById(R.id.scrollToTopCommentButton);
         layoutInflater = this.getLayoutInflater();
         menuInflater = this.getMenuInflater();
         postCommentAlert = new AlertDialog.Builder(this);
@@ -262,6 +267,30 @@ public class SingleMessageActivity extends AppCompatActivity {
                     newComment.setMessageId(singleMessage.getId());
                     PostComment(singleMessage.getId(), newComment);
                 }
+            }
+        });
+
+        scrollToTopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("KIMON", "Home Button: pressed");
+//                NestedScrollView nestedScrollView = findViewById(R.id.allMessagesScrollView);
+                nestedScrollView.smoothScrollTo(0, 0);
+            }
+        });
+
+
+        nestedScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY == 0) {
+                    Log.i("KIMON", "TOP SCROLL");
+                    scrollToTopButton.setVisibility(View.GONE);
+                }
+                if (scrollY != 0) {
+                    Log.i("KIMON", "TOP SCROLL");
+                    scrollToTopButton.setVisibility(View.VISIBLE);
+                } else scrollToTopButton.setVisibility(View.GONE);
             }
         });
 

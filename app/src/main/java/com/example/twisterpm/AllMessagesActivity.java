@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.example.twisterpm.model.Message;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
@@ -53,6 +54,7 @@ public class AllMessagesActivity extends AppCompatActivity {
     TextView verifyEmailTextView, welcomeTextView;
     Button verifyEmailButton, postNewMessageButton;
     ImageButton homeButton;
+    FloatingActionButton scrollToTopButton;
     AlertDialog.Builder deleteMessageAlert, filterAlert;
     FirebaseAuth fAuth;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -60,7 +62,7 @@ public class AllMessagesActivity extends AppCompatActivity {
     List<Message> messages;
     RelativeLayout postMessageLayout;
     LayoutInflater layoutInflater;
-
+    NestedScrollView nestedScrollView;
     //ImageButton messageOverflowButton;
     @Override
 
@@ -98,7 +100,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                 View filterView = layoutInflater.inflate(R.layout.filter_popup, null);
                 filterAlert = new AlertDialog.Builder(this);
                 filterAlert.setTitle("Select user")
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Set User", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 EditText filterEditText = filterView.findViewById(R.id.filterEditText);
@@ -110,16 +112,22 @@ public class AllMessagesActivity extends AppCompatActivity {
                                     Log.d("KIMON", "Empty comment not found!");
                                     String selectedUser = filterEditText.getText().toString().trim().replaceAll(" +", " ");
                                     GetMessagesByUser(selectedUser);
+
+//                                    Intent intent2 = new Intent(getApplicationContext(), AllMessagesActivity.class);
+//                                    intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                                    startActivity(intent2);
+//                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                                 }
                             }
-                        }).setNegativeButton("Cancel", null)
+                        })
+                        .setNeutralButton("Reset", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                GetMessages();
+                            }
+                        })
                         .setView(filterView)
                         .create().show();
-
-                Intent intent2 = new Intent(getApplicationContext(), AllMessagesActivity.class);
-                intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent2);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -147,6 +155,8 @@ public class AllMessagesActivity extends AppCompatActivity {
         //toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         homeButton = findViewById(R.id.homeButton);
+        nestedScrollView = findViewById(R.id.allMessagesScrollView);
+        scrollToTopButton = findViewById(R.id.scrollToTopMessageButton);
         deleteMessageAlert = new AlertDialog.Builder(this);
         layoutInflater = this.getLayoutInflater();
 
@@ -202,14 +212,39 @@ public class AllMessagesActivity extends AppCompatActivity {
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//                Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(intent);
+//                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+
+
+            }
+        });
+
+        scrollToTopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("KIMON", "Home Button: pressed");
+//                NestedScrollView nestedScrollView = findViewById(R.id.allMessagesScrollView);
+                nestedScrollView.smoothScrollTo(0, 0);
             }
         });
 
 
+        nestedScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY == 0) {
+                    Log.i("KIMON", "TOP SCROLL");
+                    scrollToTopButton.setVisibility(View.GONE);
+                }
+                if (scrollY != 0) {
+                    Log.i("KIMON", "TOP SCROLL");
+                    scrollToTopButton.setVisibility(View.VISIBLE);
+                } else scrollToTopButton.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
@@ -329,7 +364,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                     messages = response.body();
                     //Log.d("KIMON", messages.get(1).getUser());
                     Log.d("KIMON",messages.toString());
-//                    PopulateRecyclerView(messages);
+                    PopulateRecyclerView(messages);
                     Toolbar toolbar = findViewById(R.id.toolbar);
                     //toolbar.setTitle("All messages (" + messages.size() + ")");
                 } else {
