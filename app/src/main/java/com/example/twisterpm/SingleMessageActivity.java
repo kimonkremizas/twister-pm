@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
@@ -46,17 +47,18 @@ import retrofit2.Response;
 
 public class SingleMessageActivity extends AppCompatActivity {
     Message singleMessage;
-    TextView messageUserTextView, messageContentTextView, messageCommentsNoTextView;
-    ImageButton messageOverflowButton, postCommentButton, homeButton;
+    TextView messageUserTextView, messageContentTextView, messageCommentsNoTextView, toolbarTitle;
+    ImageButton messageOverflowButton, postCommentButton, homeButton, backButton;
     ImageView messageUserImageView;
     ConstraintLayout postCommentLayout;
     NestedScrollView nestedScrollView;
     FloatingActionButton scrollToTopButton;
     SwipeRefreshLayout swipeRefreshLayout;
+    SearchView searchView;
     RecyclerViewCommentAdapter adapter;
     LayoutInflater layoutInflater;
     MenuInflater menuInflater;
-    AlertDialog.Builder postCommentAlert, deleteMessageAlert, deleteCommentAlert, filterAlert;
+    AlertDialog.Builder postCommentAlert, deleteMessageAlert, deleteCommentAlert, longClickCommentAlert;
     FirebaseAuth fAuth;
     int singleMessageCommentsNo;
 
@@ -89,34 +91,34 @@ public class SingleMessageActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
-            case R.id.action_filter:
-                View filterView = layoutInflater.inflate(R.layout.filter_popup, null);
-                filterAlert = new AlertDialog.Builder(this);
-                filterAlert.setTitle("Select user")
-                        .setPositiveButton("Set User", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                EditText filterEditText = filterView.findViewById(R.id.filterEditText);
-                                //postCommentEditText.requestFocus();
-                                if (filterEditText.getText().toString().trim().equals("")) {
-                                    Log.d("KIMON", "Empty comment found!");
-                                    filterEditText.setError("Required field");
-                                } else {
-                                    Log.d("KIMON", "Empty comment not found!");
-                                    String selectedUser = filterEditText.getText().toString().trim().replaceAll(" +", " ");
-                                    GetCommentsByUser(selectedUser);
-                                }
-                            }
-                        })
-                        .setNeutralButton("Reset", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                GetComments();
-                            }
-                        })
-                        .setView(filterView)
-                        .create().show();
-                break;
+//            case R.id.action_filter:
+//                View filterView = layoutInflater.inflate(R.layout.filter_popup, null);
+//                filterAlert = new AlertDialog.Builder(this);
+//                filterAlert.setTitle("Select user")
+//                        .setPositiveButton("Set User", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                EditText filterEditText = filterView.findViewById(R.id.filterEditText);
+//                                //postCommentEditText.requestFocus();
+//                                if (filterEditText.getText().toString().trim().equals("")) {
+//                                    Log.d("KIMON", "Empty comment found!");
+//                                    filterEditText.setError("Required field");
+//                                } else {
+//                                    Log.d("KIMON", "Empty comment not found!");
+//                                    String selectedUser = filterEditText.getText().toString().trim().replaceAll(" +", " ");
+//                                    GetCommentsByUser(selectedUser);
+//                                }
+//                            }
+//                        })
+//                        .setNeutralButton("Reset", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                GetComments();
+//                            }
+//                        })
+//                        .setView(filterView)
+//                        .create().show();
+//                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -128,8 +130,11 @@ public class SingleMessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_message);
+        Intent intent = getIntent();
+        singleMessage = (Message) intent.getSerializableExtra("SINGLEMESSAGE");
+        Log.d("KIMON", "Intent: " + singleMessage.toString());
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("");
+        //toolbar.setTitle(singleMessage.getUser());
         //toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
@@ -138,22 +143,26 @@ public class SingleMessageActivity extends AppCompatActivity {
         messageUserImageView = findViewById(R.id.messageUserIconImage);
         messageContentTextView = findViewById(R.id.messageContentTextView);
         messageCommentsNoTextView = findViewById(R.id.messageCommentsNoTextView);
+        toolbarTitle = findViewById(R.id.toolbarTitle);
         messageOverflowButton = findViewById(R.id.messageOverflowButton);
         postCommentButton = findViewById(R.id.postCommentButton2);
         homeButton = findViewById(R.id.homeButton);
         postCommentLayout = findViewById(R.id.postCommentLayout);
         nestedScrollView = findViewById(R.id.singleMessageScrollView);
         scrollToTopButton = findViewById(R.id.scrollToTopCommentButton);
+        searchView = findViewById(R.id.searchView);
+        backButton = findViewById(R.id.backButton);
         layoutInflater = this.getLayoutInflater();
         menuInflater = this.getMenuInflater();
         postCommentAlert = new AlertDialog.Builder(this);
         deleteMessageAlert = new AlertDialog.Builder(this);
         deleteCommentAlert = new AlertDialog.Builder(this);
+        longClickCommentAlert = new AlertDialog.Builder(this);
 
-        Intent intent = getIntent();
-        singleMessage = (Message) intent.getSerializableExtra("SINGLEMESSAGE");
-        Log.d("KIMON", "Intent: " + singleMessage.toString());
+
+        toolbarTitle.setText(singleMessage.getUser());
         messageUserTextView.setText(singleMessage.getUser());
+        homeButton.setVisibility(View.GONE);
 
         if (singleMessage.getUser().contains("kremizas") || singleMessage.getUser().contains("kimon")) {
             messageUserImageView.setImageResource(R.drawable.a005man);
@@ -244,6 +253,35 @@ public class SingleMessageActivity extends AppCompatActivity {
             }
         });
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                String selectedUser = query.trim().replaceAll(" +", " ");
+                GetCommentsByUser(selectedUser);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                GetComments();
+                return false;
+            }
+        });
+
         CheckIfPostButtonShouldBeEnabled();
         postCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -317,23 +355,30 @@ public class SingleMessageActivity extends AppCompatActivity {
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
         adapter.setLongClickListener((view, position, item) -> {
-            //Comment comment = (Comment) item;
-            if (fAuth.getCurrentUser() != null) {
-                if (item.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
-                    Log.d("KIMON", "Long click with delete permission on comment: " + item.toString());
-                    deleteCommentAlert.setTitle("Delete Comment")
-                            .setMessage("Are you sure you want to delete this comment?")
+                longClickCommentAlert.setTitle("Filter comments")
+                        .setMessage("Show all comments from\n"+item.getUser()+"?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    DeleteComment(position);
+                                    String selectedUser = item.getUser();
+                                    GetCommentsByUser(selectedUser);
                                 }
                             }).setNegativeButton("No", null)
                             // .setView(view)
                             .create().show();
-                }
-            }
-
+//                if (item.getUser().equals(fAuth.getCurrentUser().getEmail()) & fAuth.getCurrentUser().isEmailVerified()) {
+//                    Log.d("KIMON", "Long click with delete permission on comment: " + item.toString());
+//                    deleteCommentAlert.setTitle("Delete Comment")
+//                            .setMessage("Are you sure you want to delete this comment?")
+//                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    DeleteComment(position);
+//                                }
+//                            }).setNegativeButton("No", null)
+//                            // .setView(view)
+//                            .create().show();
+//                }
         });
 
         adapter.setRVButtonClickListener((view, position, item) -> {

@@ -3,6 +3,7 @@ package com.example.twisterpm;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -36,16 +38,17 @@ public class SettingsActivity extends AppCompatActivity {
 
     EditText newPassword, newPasswordConfirmation, newEmail;
     Button updatePasswordButton, updateEmailButton;
-    ImageButton homeButton;
+    ImageButton homeButton, backButton;
     RadioGroup selectThemeRadioGroup;
     RadioButton lightThemeRadioButton, darkThemeRadioButton;
     FirebaseUser user;
+    TextView toolbarTitle;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        menu.removeItem(R.id.action_filter);
+        //menu.removeItem(R.id.action_filter);
         Log.d("KIMON", "Settings Activity: onCreateOptionsMenu");
         return true;
     }
@@ -78,6 +81,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        SearchView searchView = findViewById(R.id.searchView);
+        searchView.setVisibility(View.GONE);
         toolbar.setTitle("");
         //toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
@@ -88,11 +93,14 @@ public class SettingsActivity extends AppCompatActivity {
         newEmail = findViewById(R.id.newEmailEditText);
         updateEmailButton = findViewById(R.id.updateEmailButton);
         homeButton = findViewById(R.id.homeButton);
-
+        backButton = findViewById(R.id.backButton);
         selectThemeRadioGroup = findViewById(R.id.selectThemeRadioGroup);
         lightThemeRadioButton = findViewById(R.id.lightThemeRadioButton);
         darkThemeRadioButton = findViewById(R.id.darkThemeRadioButton);
+        toolbarTitle = findViewById(R.id.toolbarTitle);
 
+        toolbarTitle.setText("Settings");
+        homeButton.setVisibility(View.GONE);
 
         switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
             case Configuration.UI_MODE_NIGHT_YES:
@@ -192,6 +200,13 @@ public class SettingsActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
     }

@@ -13,11 +13,11 @@
         android:title="@string/action_logout"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_filter"
-        android:icon="@drawable/ic_baseline_filter_list_24"
-        android:orderInCategory="100"
-        android:title="Filter"
-        app:showAsAction="ifRoom" />
+<!--    <item-->
+<!--        android:id="@+id/action_filter"-->
+<!--        android:icon="@drawable/ic_baseline_search_24"-->
+<!--        android:orderInCategory="100"-->
+<!--        android:title="Filter"-->
+<!--        app:showAsAction="ifRoom" />-->
 
 </menu>
