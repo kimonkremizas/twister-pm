@@ -66,6 +66,7 @@ public class AllMessagesActivity extends AppCompatActivity {
     LayoutInflater layoutInflater;
     NestedScrollView nestedScrollView;
     boolean haveAlreadySearched;
+    String selectedUser;
 
     //ImageButton messageOverflowButton;
     @Override
@@ -80,7 +81,7 @@ public class AllMessagesActivity extends AppCompatActivity {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    String selectedUser = query.trim().replaceAll(" +", " ");
+                    selectedUser = query.trim().replaceAll(" +", " ");
                     GetMessagesByUser(selectedUser);
                     haveAlreadySearched = true;
                     return true;
@@ -350,7 +351,9 @@ public class AllMessagesActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             //swipeRefreshLayout.setRefreshing(true); // show progress
             CheckMailVerification();
-            GetMessages();
+            if (!haveAlreadySearched){
+                GetMessages();
+            } else GetMessagesByUser(selectedUser);
             if (fAuth.getCurrentUser() != null) {
                 TextView welcomeTextView = findViewById(R.id.welcomeTextView);
                 welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail() + "!");

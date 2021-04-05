@@ -62,6 +62,7 @@ public class SingleMessageActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     int singleMessageCommentsNo;
     boolean haveAlreadySearched;
+    String selectedUser;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,7 +76,7 @@ public class SingleMessageActivity extends AppCompatActivity {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    String selectedUser = query.trim().replaceAll(" +", " ");
+                    selectedUser = query.trim().replaceAll(" +", " ");
                     GetCommentsByUser(selectedUser);
                     haveAlreadySearched = true;
                     return true;
@@ -360,7 +361,9 @@ public class SingleMessageActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.singleMessageSwipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             //swipeRefreshLayout.setRefreshing(true); // show progress
-            GetComments();
+            if (!haveAlreadySearched){
+                GetComments();
+            } else GetCommentsByUser(selectedUser);
             swipeRefreshLayout.setRefreshing(false);
         });
     }
