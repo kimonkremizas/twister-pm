@@ -48,7 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        //menu.removeItem(R.id.action_filter);
+        menu.removeItem(R.id.action_search);
         Log.d("KIMON", "Settings Activity: onCreateOptionsMenu");
         return true;
     }
@@ -81,8 +81,6 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        SearchView searchView = findViewById(R.id.searchView);
-        searchView.setVisibility(View.GONE);
         toolbar.setTitle("");
         //toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);

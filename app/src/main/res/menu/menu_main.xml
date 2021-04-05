@@ -4,20 +4,18 @@
     tools:context="com.example.twisterpm.AllMessagesActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_logout"
-        android:orderInCategory="100"
         android:title="@string/action_logout"
         app:showAsAction="never" />
 
-<!--    <item-->
-<!--        android:id="@+id/action_filter"-->
-<!--        android:icon="@drawable/ic_baseline_search_24"-->
-<!--        android:orderInCategory="100"-->
-<!--        android:title="Filter"-->
-<!--        app:showAsAction="ifRoom" />-->
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="Search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
 </menu>

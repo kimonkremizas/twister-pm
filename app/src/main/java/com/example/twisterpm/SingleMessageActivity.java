@@ -67,7 +67,40 @@ public class SingleMessageActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         if (fAuth.getCurrentUser() != null) {
             getMenuInflater().inflate(R.menu.menu_main, menu);
+
+            MenuItem searchItem = menu.findItem(R.id.action_search);
+            SearchView searchView = (SearchView) searchItem.getActionView();
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    String selectedUser = query.trim().replaceAll(" +", " ");
+                    GetCommentsByUser(selectedUser);
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    return true;
+                }
+            });
+
+            searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem item) {
+                    return true;
+                }
+
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem item) {
+                    GetComments();
+                    return true;
+                }
+            });
         }
+
+
+
         Log.d("KIMON", "SingleMessage Activity: onCreateOptionsMenu");
         return true;
     }
@@ -150,7 +183,6 @@ public class SingleMessageActivity extends AppCompatActivity {
         postCommentLayout = findViewById(R.id.postCommentLayout);
         nestedScrollView = findViewById(R.id.singleMessageScrollView);
         scrollToTopButton = findViewById(R.id.scrollToTopCommentButton);
-        searchView = findViewById(R.id.searchView);
         backButton = findViewById(R.id.backButton);
         layoutInflater = this.getLayoutInflater();
         menuInflater = this.getMenuInflater();
@@ -260,27 +292,7 @@ public class SingleMessageActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                String selectedUser = query.trim().replaceAll(" +", " ");
-                GetCommentsByUser(selectedUser);
-                return true;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                GetComments();
-                return false;
-            }
-        });
 
         CheckIfPostButtonShouldBeEnabled();
         postCommentButton.setOnClickListener(new View.OnClickListener() {

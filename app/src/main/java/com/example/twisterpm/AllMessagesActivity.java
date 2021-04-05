@@ -73,6 +73,35 @@ public class AllMessagesActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         if (fAuth.getCurrentUser() != null) {
             getMenuInflater().inflate(R.menu.menu_main, menu);
+            MenuItem searchItem = menu.findItem(R.id.action_search);
+            SearchView searchView = (SearchView) searchItem.getActionView();
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    String selectedUser = query.trim().replaceAll(" +", " ");
+                    GetMessagesByUser(selectedUser);
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    return false;
+                }
+            });
+
+            searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem item) {
+                    return true;
+                }
+
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem item) {
+                    GetMessages();
+                    return true;
+                }
+            });
         }
 
         Log.d("KIMON", "AllMessages Activity: onCreateOptionsMenu");
@@ -99,6 +128,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
+
 //            case R.id.action_filter:
 //                View filterView = layoutInflater.inflate(R.layout.filter_popup, null);
 //                filterAlert = new AlertDialog.Builder(this);
@@ -158,7 +188,6 @@ public class AllMessagesActivity extends AppCompatActivity {
         deleteMessageAlert = new AlertDialog.Builder(this);
         longClickCommentAlert = new AlertDialog.Builder(this);
         layoutInflater = this.getLayoutInflater();
-        searchView = findViewById(R.id.searchView);
         backButton = findViewById(R.id.backButton);
         toolbarTitle = findViewById(R.id.toolbarTitle);
 
@@ -225,27 +254,7 @@ public class AllMessagesActivity extends AppCompatActivity {
             }
         });
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                String selectedUser = query.trim().replaceAll(" +", " ");
-                GetMessagesByUser(selectedUser);
-                return true;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                GetMessages();
-                return false;
-            }
-        });
 
 
         scrollToTopButton.setOnClickListener(new View.OnClickListener() {
