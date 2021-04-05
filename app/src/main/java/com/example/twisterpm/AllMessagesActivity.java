@@ -65,6 +65,7 @@ public class AllMessagesActivity extends AppCompatActivity {
     RelativeLayout postMessageLayout;
     LayoutInflater layoutInflater;
     NestedScrollView nestedScrollView;
+    boolean haveAlreadySearched;
 
     //ImageButton messageOverflowButton;
     @Override
@@ -75,12 +76,13 @@ public class AllMessagesActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.menu_main, menu);
             MenuItem searchItem = menu.findItem(R.id.action_search);
             SearchView searchView = (SearchView) searchItem.getActionView();
-
+            haveAlreadySearched = false;
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     String selectedUser = query.trim().replaceAll(" +", " ");
                     GetMessagesByUser(selectedUser);
+                    haveAlreadySearched = true;
                     return true;
                 }
 
@@ -98,7 +100,10 @@ public class AllMessagesActivity extends AppCompatActivity {
 
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem item) {
-                    GetMessages();
+                    if (haveAlreadySearched){
+                        GetMessages();
+                        haveAlreadySearched = false;
+                    }
                     return true;
                 }
             });

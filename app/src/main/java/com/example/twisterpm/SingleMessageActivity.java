@@ -61,6 +61,7 @@ public class SingleMessageActivity extends AppCompatActivity {
     AlertDialog.Builder postCommentAlert, deleteMessageAlert, deleteCommentAlert, longClickCommentAlert;
     FirebaseAuth fAuth;
     int singleMessageCommentsNo;
+    boolean haveAlreadySearched;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -70,12 +71,13 @@ public class SingleMessageActivity extends AppCompatActivity {
 
             MenuItem searchItem = menu.findItem(R.id.action_search);
             SearchView searchView = (SearchView) searchItem.getActionView();
-
+            haveAlreadySearched = false;
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     String selectedUser = query.trim().replaceAll(" +", " ");
                     GetCommentsByUser(selectedUser);
+                    haveAlreadySearched = true;
                     return true;
                 }
 
@@ -93,7 +95,10 @@ public class SingleMessageActivity extends AppCompatActivity {
 
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem item) {
-                    GetComments();
+                    if (haveAlreadySearched){
+                        GetComments();
+                        haveAlreadySearched = false;
+                    }
                     return true;
                 }
             });
