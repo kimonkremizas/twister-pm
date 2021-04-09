@@ -27,7 +27,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivityOriginal extends AppCompatActivity {
     EditText mEmail, mPassword;
     Button loginButton, guestButton;
     TextView mGoToRegisterTextView, forgotPasswordTextView;
@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                         Bundle bundle = new Bundle();
                         bundle.putString(FirebaseAnalytics.Param.METHOD, "email");
                         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
-                        Toast.makeText(LoginActivity.this, "Successfully logged in", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivityOriginal.this, "Successfully logged in", Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(LoginActivity.this, "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivityOriginal.this, "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         progressBar.setVisibility(View.GONE);
                     }
                 });
@@ -123,12 +123,12 @@ public class LoginActivity extends AppCompatActivity {
                                 fAuth.sendPasswordResetEmail(resetEmail.getText().toString().trim()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Toast.makeText(LoginActivity.this, "Reset e-mail sent", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(LoginActivityOriginal.this, "Reset e-mail sent", Toast.LENGTH_LONG).show();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                        Toast.makeText(LoginActivityOriginal.this, e.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                 });
                             }
