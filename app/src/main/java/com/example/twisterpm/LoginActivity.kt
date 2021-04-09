@@ -73,11 +73,12 @@ class LoginActivity : AppCompatActivity() {
                 resetAlert.setTitle("Reset Password?")
                         .setPositiveButton("Reset", object : DialogInterface.OnClickListener {
                             override fun onClick(dialog: DialogInterface, which: Int) {
-                                if (resetEmailEditText.text.toString().trim().isEmpty()) {
-                                    resetEmailEditText.error = "Required field"
+                                val resetEmail = view.findViewById<EditText>(R.id.resetEmailEditText)
+                                if (resetEmail.text.toString().trim().isEmpty()) {
+                                    resetEmail.error = "Required field"
                                     return
                                 }
-                                fAuth.sendPasswordResetEmail(resetEmailEditText.text.toString().trim())
+                                fAuth.sendPasswordResetEmail(resetEmail.text.toString().trim())
                                         .addOnSuccessListener { Toast.makeText(this@LoginActivity, "Reset e-mail sent", Toast.LENGTH_LONG).show() }
 //                                        .addOnSuccessListener(object : OnSuccessListener<Void?> {
 //                                    override fun onSuccess(aVoid: Void?) {
