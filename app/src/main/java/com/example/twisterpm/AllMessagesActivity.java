@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -18,7 +19,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -54,6 +55,7 @@ import static com.example.twisterpm.ApiUtils.MY_PREFS;
 public class AllMessagesActivity extends AppCompatActivity {
     TextView verifyEmailTextView, welcomeTextView, toolbarTitle;
     Button verifyEmailButton, postNewMessageButton;
+    SwitchCompat filterMessagesSwitch;
     ImageButton homeButton, backButton;
     FloatingActionButton scrollToTopButton;
     SearchView searchView;
@@ -76,7 +78,7 @@ public class AllMessagesActivity extends AppCompatActivity {
         if (fAuth.getCurrentUser() != null) {
             getMenuInflater().inflate(R.menu.menu_main, menu);
             MenuItem searchItem = menu.findItem(R.id.action_search);
-            SearchView searchView = (SearchView) searchItem.getActionView();
+            searchView = (SearchView) searchItem.getActionView();
             haveAlreadySearched = false;
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
@@ -101,7 +103,7 @@ public class AllMessagesActivity extends AppCompatActivity {
 
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem item) {
-                    if (haveAlreadySearched){
+                    if (haveAlreadySearched) {
                         GetMessages();
                         haveAlreadySearched = false;
                     }
@@ -109,9 +111,7 @@ public class AllMessagesActivity extends AppCompatActivity {
                 }
             });
         }
-
         Log.d("KIMON", "AllMessages Activity: onCreateOptionsMenu");
-        //getMenuInflater().inflate(R.menu.menu_bottom, menu);
         return true;
     }
 
@@ -134,35 +134,6 @@ public class AllMessagesActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                 finish();
                 break;
-
-//            case R.id.action_filter:
-//                View filterView = layoutInflater.inflate(R.layout.filter_popup, null);
-//                filterAlert = new AlertDialog.Builder(this);
-//                filterAlert.setTitle("Select user")
-//                        .setPositiveButton("Set User", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                EditText filterEditText = filterView.findViewById(R.id.filterEditText);
-//                                //postCommentEditText.requestFocus();
-//                                if (filterEditText.getText().toString().trim().equals("")) {
-//                                    Log.d("KIMON", "Empty comment found!");
-//                                    filterEditText.setError("Required field");
-//                                } else {
-//                                    Log.d("KIMON", "Empty comment not found!");
-//                                    String selectedUser = filterEditText.getText().toString().trim().replaceAll(" +", " ");
-//                                    GetMessagesByUser(selectedUser);
-//                                }
-//                            }
-//                        })
-//                        .setNeutralButton("Reset", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                GetMessages();
-//                            }
-//                        })
-//                        .setView(filterView)
-//                        .create().show();
-//                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -184,6 +155,7 @@ public class AllMessagesActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_all_messages);
         postMessageLayout = findViewById(R.id.postMessageLayout);
+        filterMessagesSwitch = findViewById(R.id.filterMessagesSwitch);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         //toolbar.setTitleTextColor(Color.WHITE);
@@ -199,8 +171,6 @@ public class AllMessagesActivity extends AppCompatActivity {
 
         toolbarTitle.setVisibility(View.GONE);
         backButton.setVisibility(View.GONE);
-
-
         Log.d("KIMON", "AllMessages Activity: onCreate");
 
         SwipeRefresh();
@@ -225,7 +195,6 @@ public class AllMessagesActivity extends AppCompatActivity {
         verifyEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // send verification email
                 fAuth.getCurrentUser().sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -255,23 +224,16 @@ public class AllMessagesActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
-
             }
         });
-
-
-
 
         scrollToTopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("KIMON", "Home Button: pressed");
-//                NestedScrollView nestedScrollView = findViewById(R.id.allMessagesScrollView);
                 nestedScrollView.smoothScrollTo(0, 0);
             }
         });
-
 
         nestedScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
@@ -287,6 +249,22 @@ public class AllMessagesActivity extends AppCompatActivity {
                 } else scrollToTopButton.setVisibility(View.GONE);
             }
         });
+
+        filterMessagesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    GetMessages();
+                }
+                if (isChecked) {
+                    if (!haveAlreadySearched) {
+                        Toast.makeText(getApplicationContext(), "Use the search function on top of the screen to filter messages by user", Toast.LENGTH_LONG).show();
+                        filterMessagesSwitch.setChecked(false);
+                        filterMessagesSwitch.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -295,21 +273,6 @@ public class AllMessagesActivity extends AppCompatActivity {
         Log.d("KIMON", "AllMessages Activity: onResume");
         GetMessages();
     }
-
-//    @Override
-//    protected void onSaveInstanceState(@NonNull Bundle outState) {
-//        outState.putSerializable("KIMON", new ArrayList(messages));
-//        super.onSaveInstanceState(outState);
-//        Log.d("KIMON", "AllMessages Activity: onSaveInstanceState");
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-//        messages = (List<Message>) savedInstanceState.getSerializable("KIMON");
-//        PopulateRecyclerView(messages);
-//        super.onRestoreInstanceState(savedInstanceState);
-//        Log.d("KIMON", "AllMessages Activity: onRestoreInstanceState");
-//    }
 
     @Override
     public void finish() {
@@ -324,12 +287,11 @@ public class AllMessagesActivity extends AppCompatActivity {
         postNewMessageButton = findViewById(R.id.postNewMessageButton);
         if (fAuth.getCurrentUser() != null) {
             fAuth.getCurrentUser().reload();
-            //Log.d("KIMON", "CheckMailVerification start - " + fAuth.getCurrentUser().getEmail());
-
             if (!fAuth.getCurrentUser().isEmailVerified()) {
                 verifyEmailTextView.setVisibility(View.VISIBLE);
                 verifyEmailButton.setVisibility(View.VISIBLE);
                 postMessageLayout.setVisibility(View.GONE);
+                filterMessagesSwitch.setVisibility(View.GONE);
                 Log.d("KIMON", "CheckMailVerification: not verified - " + fAuth.getCurrentUser().getEmail());
             }
             if (fAuth.getCurrentUser().isEmailVerified()) {
@@ -338,27 +300,20 @@ public class AllMessagesActivity extends AppCompatActivity {
                 postMessageLayout.setVisibility(View.VISIBLE);
                 Log.d("KIMON", "CheckMailVerification: verified - " + fAuth.getCurrentUser().getEmail());
             }
-            //Log.d("KIMON", "CheckMailVerification end - " + fAuth.getCurrentUser().getEmail());
         }
-//        else{
-//            verifyEmailTextView.setVisibility(View.VISIBLE);
-//            verifyEmailButton.setVisibility(View.VISIBLE);
-//        }
     }
 
     public void SwipeRefresh() {
         swipeRefreshLayout = findViewById(R.id.mainSwipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            //swipeRefreshLayout.setRefreshing(true); // show progress
             CheckMailVerification();
-            if (!haveAlreadySearched){
+            if (!haveAlreadySearched) {
                 GetMessages();
             } else GetMessagesByUser(selectedUser);
             if (fAuth.getCurrentUser() != null) {
                 TextView welcomeTextView = findViewById(R.id.welcomeTextView);
                 welcomeTextView.setText("Hi, " + fAuth.getCurrentUser().getEmail() + "!");
             }
-            //swipeRefreshLayout.setRefreshing(false);
         });
     }
 
@@ -372,12 +327,12 @@ public class AllMessagesActivity extends AppCompatActivity {
             public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
                 swipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful()) {
-                    //String responseMessage = response.message();
                     messages = response.body();
-                    //Log.d("KIMON", messages.get(1).getUser());
                     PopulateRecyclerView(messages);
                     Toolbar toolbar = findViewById(R.id.toolbar);
-                    //toolbar.setTitle("All messages (" + messages.size() + ")");
+                    haveAlreadySearched = false;
+                    filterMessagesSwitch.setChecked(false);
+                    filterMessagesSwitch.setVisibility(View.GONE);
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
                     String errorMessage = "Problem " + response.code() + " " + response.message();
@@ -404,13 +359,14 @@ public class AllMessagesActivity extends AppCompatActivity {
             public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
                 swipeRefreshLayout.setRefreshing(false);
                 if (response.isSuccessful()) {
-                    //String responseMessage = response.message();
                     messages = response.body();
-                    //Log.d("KIMON", messages.get(1).getUser());
                     Log.d("KIMON", messages.toString());
                     PopulateRecyclerView(messages);
                     Toolbar toolbar = findViewById(R.id.toolbar);
-                    //toolbar.setTitle("All messages (" + messages.size() + ")");
+                    haveAlreadySearched = true;
+                    filterMessagesSwitch.setText(selectedUser + "'s messages");
+                    filterMessagesSwitch.setVisibility(View.VISIBLE);
+                    filterMessagesSwitch.setChecked(true);
                 } else {
                     Toast.makeText(getApplicationContext(), response.code(), Toast.LENGTH_LONG).show();
                     String errorMessage = "Problem " + response.code() + " " + response.message();
@@ -481,10 +437,7 @@ public class AllMessagesActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Message> call, Response<Message> response) {
                 if (response.isSuccessful()) {
-                    //Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
-                    //intent.putExtra("SINGLEMESSAGE", "Message deleted");
                     Log.d("KIMON", "Message with id " + adapter.getItem(position).getId() + " deleted");
-                    //startActivity(intent);
                     GetMessages();
                     Toast.makeText(getApplicationContext(), "Message successfully deleted", Toast.LENGTH_LONG).show();
                 } else {
@@ -502,7 +455,6 @@ public class AllMessagesActivity extends AppCompatActivity {
     }
 
     public void ShowDeleteMessageAlert(int position) {
-        //deleteMessageAlert = new AlertDialog.Builder(getApplicationContext());
         deleteMessageAlert.setTitle("Delete Message")
                 .setMessage("Are you sure you want to delete this message?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -523,7 +475,6 @@ public class AllMessagesActivity extends AppCompatActivity {
         })
                 .create().show();
     }
-
 
     private void CheckIfPostButtonShouldBeEnabled() {
         EditText newMessageEditText = findViewById(R.id.newMessageEditText);
@@ -551,7 +502,6 @@ public class AllMessagesActivity extends AppCompatActivity {
         adapter = new RecyclerViewMessageAdapter(this, messages);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
-        //recyclerView.scheduleLayoutAnimation();
         adapter.setClickListener((view, position, item) -> {
             //Message message = (Message) item;
             Log.d("KIMON", item.toString());
@@ -563,17 +513,16 @@ public class AllMessagesActivity extends AppCompatActivity {
         });
 
         adapter.setLongClickListener((view, position, item) -> {
-                longClickCommentAlert.setTitle("Filter messages")
-                        .setMessage("Show all messages from\n"+item.getUser()+"?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String selectedUser = item.getUser();
-                                GetMessagesByUser(selectedUser);
-                            }
-                        }).setNegativeButton("No", null)
-                        //.setView(view)
-                        .create().show();
+            longClickCommentAlert.setTitle("Filter messages")
+                    .setMessage("Show all messages from\n" + item.getUser() + "?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            selectedUser = item.getUser();
+                            GetMessagesByUser(selectedUser);
+                        }
+                    }).setNegativeButton("No", null)
+                    .create().show();
         });
 
         adapter.setRVButtonClickListener((view, position, item) -> {

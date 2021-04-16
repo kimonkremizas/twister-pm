@@ -41,7 +41,6 @@ public class RegisterActivity extends AppCompatActivity {
         mPasswordConfirmation = findViewById(R.id.registerPasswordConfirmation);
         mRegisterButton = findViewById(R.id.registerButton);
         mGoToLoginTextView = findViewById(R.id.goToLoginTextView);
-
         fAuth = FirebaseAuth.getInstance();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         progressBar = findViewById(R.id.progressBar);
@@ -62,30 +61,24 @@ public class RegisterActivity extends AppCompatActivity {
                     mEmail.setError("Email is required");
                     return;
                 }
-
                 if (password.isEmpty()) {
                     mPassword.setError("Password is required");
                     return;
                 }
-
                 if (passwordConfirmation.isEmpty()) {
                     mPassword.setError("Password confirmation is required");
                     return;
                 }
-
                 if (password.length() < 6) {
                     mPassword.setError("Password must contain 6 characters or more");
                     return;
                 }
-
                 if (!password.equals(passwordConfirmation)) {
                     mPasswordConfirmation.setError("Passwords do not match");
                     return;
                 }
-
                 progressBar.setVisibility(View.VISIBLE);
 
-                // Register the user in firebase
                 fAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
@@ -110,14 +103,15 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
     }
+
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }
 

@@ -45,11 +45,9 @@ public class LoginActivityOriginal extends AppCompatActivity {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         fAuth = FirebaseAuth.getInstance();
-
         mEmail = findViewById(R.id.loginEmail);
         mPassword = findViewById(R.id.loginPassword);
         progressBar = findViewById(R.id.progressBar);
-//        resetAlert = new AlertDialog.Builder(this,R.style.ThemeTwisterPM);
         resetAlert = new AlertDialog.Builder(this);
         inflater = this.getLayoutInflater();
         loginButton = findViewById(R.id.loginButton);
@@ -77,10 +75,7 @@ public class LoginActivityOriginal extends AppCompatActivity {
                     mPassword.setError("Password must contain 6 characters or more");
                     return;
                 }
-
                 progressBar.setVisibility(View.VISIBLE);
-
-                // Authenticate user
 
                 fAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
@@ -92,8 +87,7 @@ public class LoginActivityOriginal extends AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
-                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
-                        //finish();
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -119,7 +113,6 @@ public class LoginActivityOriginal extends AppCompatActivity {
                                     resetEmail.setError("Required field");
                                     return;
                                 }
-
                                 fAuth.sendPasswordResetEmail(resetEmail.getText().toString().trim()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -138,12 +131,11 @@ public class LoginActivityOriginal extends AppCompatActivity {
             }
         });
 
-
         mGoToRegisterTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
-                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }
         });
 
@@ -153,13 +145,14 @@ public class LoginActivityOriginal extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), AllMessagesActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
     }
+
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

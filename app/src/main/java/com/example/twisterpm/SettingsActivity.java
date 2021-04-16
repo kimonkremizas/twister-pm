@@ -96,7 +96,6 @@ public class SettingsActivity extends AppCompatActivity {
         lightThemeRadioButton = findViewById(R.id.lightThemeRadioButton);
         darkThemeRadioButton = findViewById(R.id.darkThemeRadioButton);
         toolbarTitle = findViewById(R.id.toolbarTitle);
-
         toolbarTitle.setText("Settings");
         homeButton.setVisibility(View.GONE);
 
@@ -112,7 +111,7 @@ public class SettingsActivity extends AppCompatActivity {
         selectThemeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                doOnThemeChanged(group,checkedId);
+                doOnThemeChanged(group, checkedId);
             }
         });
 
@@ -125,27 +124,22 @@ public class SettingsActivity extends AppCompatActivity {
                     newPassword.setError("Required field");
                     return;
                 }
-
                 if (newPassword.length() < 6) {
                     newPassword.setError("Password must contain 6 characters or more");
                     return;
                 }
-
                 if (newPasswordConfirmation.getText().toString().trim().isEmpty()) {
                     newPasswordConfirmation.setError("Required field");
                     return;
                 }
-
                 if (newPasswordConfirmation.length() < 6) {
                     newPasswordConfirmation.setError("Password must contain 6 characters or more");
                     return;
                 }
-
                 if (!newPassword.getText().toString().trim().equals(newPasswordConfirmation.getText().toString().trim())) {
                     newPasswordConfirmation.setError("Passwords do not match");
                     return;
                 }
-
                 user.updatePassword(newPassword.getText().toString().trim()).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -162,21 +156,17 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-
         updateEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (newEmail.getText().toString().trim().isEmpty()) {
                     newEmail.setError("Required field");
                     return;
                 }
-
                 if (newEmail.getText().toString().trim().equals(user.getEmail())) {
                     newEmail.setError("Please select a different e-mail");
                     return;
                 }
-
                 user.updateEmail(newEmail.getText().toString().trim()).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -200,7 +190,6 @@ public class SettingsActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }
         });
-
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,19 +204,17 @@ public class SettingsActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
-
     private void doOnThemeChanged(RadioGroup group, int checkedId) {
         int checkedRadioId = group.getCheckedRadioButtonId();
         SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS, MODE_PRIVATE).edit();
-
-         if (checkedRadioId == R.id.lightThemeRadioButton) {
+        if (checkedRadioId == R.id.lightThemeRadioButton) {
             AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
-            editor.putString("Theme","Light");
+            editor.putString("Theme", "Light");
             recreate();
             Toast.makeText(this, "Theme: Light", Toast.LENGTH_SHORT).show();
         } else if (checkedRadioId == R.id.darkThemeRadioButton) {
             AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
-            editor.putString("Theme","Dark");
+            editor.putString("Theme", "Dark");
             recreate();
             Toast.makeText(this, "Theme: Dark", Toast.LENGTH_SHORT).show();
         }

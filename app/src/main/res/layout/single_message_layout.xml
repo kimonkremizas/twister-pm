@@ -61,6 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/messageContentTextView"
                 android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
                 android:text="# of comments" />
 
             <ImageButton
