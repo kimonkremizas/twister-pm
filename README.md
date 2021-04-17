@@ -1,5 +1,5 @@
 # TwisterPM
-A Twitter like android application written mostly in **Java** and **Kotlin**.
+A Twitter like android application written in **Java** and **Kotlin**.
 Guest users can only read messages and their comments. Registered users can also post and search messages and comments, as well as delete the ones that belong to them.
 
 The data are shown using custom recyclerview adapters and the REST client that was used is **Retrofit 2**.
