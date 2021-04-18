@@ -17,5 +17,5 @@
     <color name="toolbarColor">#2C4245</color>
     <color name="buttonColor">#63979F</color>
     <color name="postCommentBackgroundColor">#252424</color>
-    <color name="toolbarTextColor">#FF000000</color>
+    <color name="invertedTextColor">#FFFFFF</color>
 </resources>
