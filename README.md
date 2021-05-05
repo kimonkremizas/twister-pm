@@ -12,6 +12,10 @@ GIF:
 
 ![GIF of Twister PM demo](https://github.com/kkremizas/twister-pm/blob/master/twister-demo.gif)
 
+Video:
+
+https://user-images.githubusercontent.com/34919242/117223087-3a3fce00-ae0d-11eb-9688-03e19a84e91b.mp4
+
 Youtube video:
 
 [![Twister PM](http://img.youtube.com/vi/OXNtWyX8Hso/0.jpg)](http://www.youtube.com/watch?v=OXNtWyX8Hso "Twister PM")
