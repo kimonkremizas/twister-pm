@@ -8,14 +8,8 @@ Google **Firebase Authentication** SDK was used for the register, login, passwor
 
 It was a personal project, part of my 4th semester elective course in Mobile Development.
 
-GIF:
-
-![GIF of Twister PM demo](https://github.com/kkremizas/twister-pm/blob/master/twister-demo.gif)
-
 Video:
 
 https://user-images.githubusercontent.com/34919242/117223087-3a3fce00-ae0d-11eb-9688-03e19a84e91b.mp4
 
-Youtube video:
-
-[![Twister PM](http://img.youtube.com/vi/OXNtWyX8Hso/0.jpg)](http://www.youtube.com/watch?v=OXNtWyX8Hso "Twister PM")
+Youtube link: http://www.youtube.com/watch?v=OXNtWyX8Hso
